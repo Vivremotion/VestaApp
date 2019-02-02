@@ -1,17 +1,16 @@
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { ErrorHandler, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { Camera } from '@ionic-native/camera';
-import { SplashScreen } from '@ionic-native/splash-screen';
-import { StatusBar } from '@ionic-native/status-bar';
+import { BluetoothSerial } from '@ionic-native/bluetooth-serial/ngx';
+import { SplashScreen } from '@ionic-native/splash-screen/ngx';
+import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { IonicStorageModule, Storage } from '@ionic/storage';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
 
-import { Items } from '../mocks/providers/items';
-import { Settings, User, Api } from '../providers';
-import { MyApp } from './app.component';
+import { Settings, User, Api, Stations } from '../providers';
+import { StationsApp } from './app.component';
 
 // The translate loader needs to know where to load i18n files
 // in Ionic's static asset pipeline.
@@ -20,12 +19,6 @@ export function createTranslateLoader(http: HttpClient) {
 }
 
 export function provideSettings(storage: Storage) {
-  /**
-   * The Settings provider takes a set of default settings for your app.
-   *
-   * You can add new settings options at any time. Once the settings are saved,
-   * these values will not overwrite the saved values (this can be done manually if desired).
-   */
   return new Settings(storage, {
     option1: true,
     option2: 'Ionitron J. Framework',
@@ -34,9 +27,15 @@ export function provideSettings(storage: Storage) {
   });
 }
 
+function provideStations(storage: Storage) {
+  const stations = new Stations(storage);
+  console.log(stations);
+  return stations;
+}
+
 @NgModule({
   declarations: [
-    MyApp
+    StationsApp
   ],
   imports: [
     BrowserModule,
@@ -48,20 +47,22 @@ export function provideSettings(storage: Storage) {
         deps: [HttpClient]
       }
     }),
-    IonicModule.forRoot(MyApp),
-    IonicStorageModule.forRoot()
+    IonicModule.forRoot(StationsApp),
+    IonicStorageModule.forRoot({
+      driverOrder: ['localstorage', 'indexeddb', 'sqlite', 'websql']
+    })
   ],
   bootstrap: [IonicApp],
   entryComponents: [
-    MyApp
+    StationsApp
   ],
   providers: [
     Api,
-    Items,
     User,
-    Camera,
+    BluetoothSerial,
     SplashScreen,
     StatusBar,
+    { provide: Stations, useFactory: provideStations, deps: [Storage] },
     { provide: Settings, useFactory: provideSettings, deps: [Storage] },
     // Keep this to enable Ionic's runtime error handling during development
     { provide: ErrorHandler, useClass: IonicErrorHandler }

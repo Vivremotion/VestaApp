@@ -32,6 +32,8 @@ $colors: (
   dark:       #222
 );
 
+$refresher-icon-color: map-get($map: $colors, $key: primary);
+$refresher-icon-font-size: 40px;
 
 // App iOS Variables
 // --------------------------------------------------

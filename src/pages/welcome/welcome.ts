@@ -14,7 +14,7 @@ import { IonicPage, NavController } from 'ionic-angular';
 })
 export class WelcomePage {
 
-  constructor(public navCtrl: NavController) { }
+  constructor(public navCtrl: NavController) {}
 
   login() {
     this.navCtrl.push('LoginPage');
@@ -22,5 +22,9 @@ export class WelcomePage {
 
   signup() {
     this.navCtrl.push('SignupPage');
+  }
+
+  later() {
+    this.navCtrl.push('TabsPage');
   }
 }

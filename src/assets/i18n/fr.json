@@ -5,7 +5,7 @@
   "LOGIN": "Connexion",
   "SIGNUP": "Inscription",
 
-  "TAB1_TITLE": "Items",
+  "TAB1_TITLE": "Stations",
   "TAB2_TITLE": "Recherche",
   "TAB3_TITLE": "Paramètres",
 
@@ -37,10 +37,10 @@
   "SIGNUP_ERROR": "Inscription impossible. Veuillez vérifier les informations de votre compte et réessayer.",
   "SIGNUP_BUTTON": "Inscription",
 
-  "LIST_MASTER_TITLE": "Items",
+  "STATIONS": "Stations",
 
-  "ITEM_CREATE_TITLE": "Nouvel item",
-  "ITEM_CREATE_CHOOSE_IMAGE": "Ajouter une image",
+  "ADD_DEVICE_TITLE": "Ajouter des stations",
+  "CONNECT": "Connecter",
 
   "CARDS_TITLE": "Social",
 

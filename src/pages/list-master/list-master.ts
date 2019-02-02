@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { IonicPage, ModalController, NavController } from 'ionic-angular';
 
-import { Item } from '../../models/item';
-import { Items } from '../../providers';
+import { Station } from '../../models/station';
+import { Stations } from '../../providers';
 
 @IonicPage()
 @Component({
@@ -10,10 +10,11 @@ import { Items } from '../../providers';
   templateUrl: 'list-master.html'
 })
 export class ListMasterPage {
-  currentItems: Item[];
+  currentStations: Station[];
 
-  constructor(public navCtrl: NavController, public items: Items, public modalCtrl: ModalController) {
-    this.currentItems = this.items.query();
+  constructor(public navCtrl: NavController, public stations: Stations, public modalCtrl: ModalController) {
+    stations.get()
+      .then(stations => this.currentStations = stations);
   }
 
   /**
@@ -22,17 +23,18 @@ export class ListMasterPage {
   ionViewDidLoad() {
   }
 
+  updateStationsList() {
+    this.stations.get()
+      .then(stations => this.currentStations = stations);
+  }
+
   /**
    * Prompt the user to add a new item. This shows our ItemCreatePage in a
    * modal and then adds the new item to our data source if the user created one.
    */
   addItem() {
-    let addModal = this.modalCtrl.create('ItemCreatePage');
-    addModal.onDidDismiss(item => {
-      if (item) {
-        this.items.add(item);
-      }
-    })
+    let addModal = this.modalCtrl.create('AddDevicePage');
+    addModal.onDidDismiss(this.updateStationsList.bind(this));
     addModal.present();
   }
 
@@ -40,15 +42,15 @@ export class ListMasterPage {
    * Delete an item from the list of items.
    */
   deleteItem(item) {
-    this.items.delete(item);
+    this.stations.delete(item);
   }
 
   /**
    * Navigate to the detail page for this item.
    */
-  openItem(item: Item) {
+  openItem(station: Station) {
     this.navCtrl.push('ItemDetailPage', {
-      item: item
+      item: station
     });
   }
 }

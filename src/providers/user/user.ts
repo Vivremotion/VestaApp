@@ -18,7 +18,7 @@ import { Api } from '../api/api';
  *   user: {
  *     // User fields your app needs, like "id", "name", "email", etc.
  *   }
- * }Ø
+ * }
  * ```
  *
  * If the `status` field is not `success`, then an error is detected and returned.
@@ -80,5 +80,12 @@ export class User {
    */
   _loggedIn(resp) {
     this._user = resp.user;
+  }
+
+  /**
+   * Returns the current user
+   */
+  get() {
+    return this._user;
   }
 }

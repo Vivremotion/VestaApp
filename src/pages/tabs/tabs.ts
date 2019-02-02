@@ -3,6 +3,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { IonicPage, NavController } from 'ionic-angular';
 
 import { Tab1Root, Tab2Root, Tab3Root } from '../';
+import { User } from '../../providers';
 
 @IonicPage()
 @Component({
@@ -18,7 +19,7 @@ export class TabsPage {
   tab2Title = " ";
   tab3Title = " ";
 
-  constructor(public navCtrl: NavController, public translateService: TranslateService) {
+  constructor(public navCtrl: NavController, public translateService: TranslateService, public user: User) {
     translateService.get(['TAB1_TITLE', 'TAB2_TITLE', 'TAB3_TITLE']).subscribe(values => {
       this.tab1Title = values['TAB1_TITLE'];
       this.tab2Title = values['TAB2_TITLE'];

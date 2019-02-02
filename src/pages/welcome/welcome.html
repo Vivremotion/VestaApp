@@ -6,8 +6,9 @@
       {{ 'WELCOME_INTRO' | translate }}
     </div>
   </div>
-  <div padding>
+  <div padding text-center>
     <button ion-button block (click)="signup()">{{ 'SIGNUP' | translate }}</button>
     <button ion-button block (click)="login()" class="login">{{ 'LOGIN' | translate }}</button>
+    <a (click)="later()" class="later">{{ 'WELCOME_LATER' | translate }}</a>
   </div>
 </ion-content>

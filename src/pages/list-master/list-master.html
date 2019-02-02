@@ -1,7 +1,7 @@
 <ion-header>
 
   <ion-navbar>
-    <ion-title>{{ 'LIST_MASTER_TITLE' | translate }}</ion-title>
+    <ion-title>{{ 'STATIONS' | translate }}</ion-title>
 
     <ion-buttons end>
       <button ion-button icon-only (click)="addItem()">
@@ -13,9 +13,16 @@
 </ion-header>
 
 <ion-content>
-
   <ion-list>
-    <ion-item-sliding *ngFor="let item of currentItems">
+    <ng-container *ngFor="let station of currentStations">
+      <ion-item *ngIf="station.name">
+          {{station.name}}
+          <!-- <button ion-button (click)="connect(connect)" class="connect-button" size="large">
+              {{ 'CONNECT' | translate }}
+          </button> -->
+      </ion-item>
+    </ng-container>
+    <!-- <ion-item-sliding *ngFor="let item of currentItems">
       <button ion-item (click)="openItem(item)">
         <ion-avatar item-start>
           <img [src]="item.profilePic" />
@@ -25,11 +32,11 @@
         <ion-note item-end *ngIf="item.note">{{item.note}}</ion-note>
       </button>
 
-      <ion-item-options>
+      <ion-item-options side="end">
         <button ion-button color="danger" (click)="deleteItem(item)">
           {{ 'DELETE_BUTTON' | translate }}
         </button>
       </ion-item-options>
-    </ion-item-sliding>
+    </ion-item-sliding> -->
   </ion-list>
 </ion-content>
