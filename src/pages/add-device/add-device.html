@@ -1,0 +1,55 @@
+<ion-header>
+
+  <ion-navbar>
+    <ion-title>{{ 'ADD_STATIONS_TITLE' | translate }}</ion-title>
+    <ion-buttons start>
+      <button ion-button (click)="cancel()">
+        <span color="primary" showWhen="ios">
+          {{ 'CANCEL_BUTTON' | translate }}
+        </span>
+        <ion-icon name="md-close" showWhen="android,windows"></ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-navbar>
+
+</ion-header>
+
+<ion-content text-center>
+  <ion-spinner *ngIf="firstRefresh" color="primary" id="spinner"></ion-spinner>
+  <ion-refresher (ionRefresh)="refreshDevices($event)">
+    <ion-refresher-content
+      pullingIcon="arrow-dropdown"
+    ></ion-refresher-content>
+  </ion-refresher>
+  <ion-list>
+      <ng-container *ngFor="let device of availableDevices">
+        <ion-item *ngIf="device.name">
+            {{device.name}}
+            <button ion-button (click)="connect(device)" class="connect-button" size="large">
+                {{ 'CONNECT' | translate }}
+            </button>
+        </ion-item>
+      </ng-container>
+  </ion-list>
+
+  <!-- <form *ngIf="form" [formGroup]="form" (ngSubmit)="createItem()">
+    <input type="file" #fileInput style="visibility: hidden; height: 0px" name="files[]" (change)="processWebImage($event)" />
+    <div class="profile-image-wrapper" (click)="getPicture()">
+      <div class="profile-image-placeholder" *ngIf="!this.form.controls.profilePic.value">
+        <ion-icon name="add"></ion-icon>
+        <div>
+          {{ 'ITEM_CREATE_CHOOSE_IMAGE' | translate }}
+        </div>
+      </div>
+      <div class="profile-image" [style.backgroundImage]="getProfileImageStyle()" *ngIf="this.form.controls.profilePic.value"></div>
+    </div>
+    <ion-list>
+      <ion-item>
+        <ion-input type="text" placeholder="{{ 'ITEM_NAME_PLACEHOLDER' | translate }}" formControlName="name"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-input type="text" placeholder="{{ 'ITEM_ABOUT_PLACEHOLDER' | translate }}" formControlName="about"></ion-input>
+      </ion-item>
+    </ion-list>
+  </form> -->
+</ion-content>
