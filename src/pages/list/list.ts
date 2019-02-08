@@ -6,26 +6,19 @@ import { Stations } from '../../providers';
 
 @IonicPage()
 @Component({
-  selector: 'page-list-master',
-  templateUrl: 'list-master.html'
+  selector: 'page-list',
+  templateUrl: 'list.html'
 })
-export class ListMasterPage {
+export class ListPage {
   currentStations: Station[];
 
   constructor(public navCtrl: NavController, public stations: Stations, public modalCtrl: ModalController) {
-    stations.get()
-      .then(stations => this.currentStations = stations);
-  }
-
-  /**
-   * The view loaded, let's query our items for the list
-   */
-  ionViewDidLoad() {
-  }
-
-  updateStationsList() {
-    this.stations.get()
-      .then(stations => this.currentStations = stations);
+    stations.watchConnected({
+      next: function (connectedStations) {
+        console.log('list', connectedStations);
+        this.currentStations = connectedStations;
+      }.bind(this)
+    })
   }
 
   /**
@@ -34,7 +27,6 @@ export class ListMasterPage {
    */
   addItem() {
     let addModal = this.modalCtrl.create('AddDevicePage');
-    addModal.onDidDismiss(this.updateStationsList.bind(this));
     addModal.present();
   }
 

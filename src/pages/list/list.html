@@ -15,12 +15,17 @@
 <ion-content>
   <ion-list>
     <ng-container *ngFor="let station of currentStations">
-      <ion-item *ngIf="station.name">
-          {{station.name}}
+      <ion-card *ngIf="station.name">
+        <ion-card-header>
+          <ion-card-title>{{station.name}}</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+
+        </ion-card-content>
           <!-- <button ion-button (click)="connect(connect)" class="connect-button" size="large">
               {{ 'CONNECT' | translate }}
           </button> -->
-      </ion-item>
+      </ion-card>
     </ng-container>
     <!-- <ion-item-sliding *ngFor="let item of currentItems">
       <button ion-item (click)="openItem(item)">
