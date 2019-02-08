@@ -27,8 +27,8 @@ export function provideSettings(storage: Storage) {
   });
 }
 
-function provideStations(storage: Storage) {
-  const stations = new Stations(storage);
+function provideStations(storage: Storage, bluetooth: BluetoothSerial) {
+  const stations = new Stations(storage, bluetooth);
   console.log(stations);
   return stations;
 }
@@ -62,7 +62,7 @@ function provideStations(storage: Storage) {
     BluetoothSerial,
     SplashScreen,
     StatusBar,
-    { provide: Stations, useFactory: provideStations, deps: [Storage] },
+    { provide: Stations, useFactory: provideStations, deps: [Storage, BluetoothSerial] },
     { provide: Settings, useFactory: provideSettings, deps: [Storage] },
     // Keep this to enable Ionic's runtime error handling during development
     { provide: ErrorHandler, useClass: IonicErrorHandler }
