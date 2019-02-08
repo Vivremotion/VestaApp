@@ -1,9 +1,8 @@
 import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { BluetoothSerial } from '@ionic-native/bluetooth-serial/ngx';
 import { IonicPage, NavController, ViewController, AlertController, ToastController } from 'ionic-angular';
 import { Stations } from '../../providers/';
-import { connect } from 'http2';
+import { Station } from '../../models/station';
 
 const errorLog = (error) => console.error(error);
 
@@ -13,11 +12,9 @@ const errorLog = (error) => console.error(error);
   templateUrl: 'add-device.html'
 })
 export class AddDevicePage {
-  isReadyToSave: boolean;
   item: any;
-  form: FormGroup;
-  pairedStations: any[];
   availableDevices: any[];
+  connectedStations: Station[];
   firstRefresh: Boolean = true;
 
   constructor(
@@ -25,36 +22,33 @@ export class AddDevicePage {
     public viewCtrl: ViewController,
     public toastController: ToastController,
     public alertController: AlertController,
-    formBuilder: FormBuilder,
     public bluetooth: BluetoothSerial,
     public stations: Stations,
   ) {
+    stations.watchConnected({
+      next: function(connectedStations) {
+        this.connectedStations = connectedStations;
+      }.bind(this),
+      error: error => console.error(error)
+    });
     this.refreshDevices();
-    console.log(stations)
-    stations.get()
-      .then(stations => this.pairedStations = stations);
-    this.form = formBuilder.group({
-      name: ['', Validators.required],
-      profilePic: [''],
-      about: ['']
-    });
-
-    // Watch the form for changes, and
-    this.form.valueChanges.subscribe((v) => {
-      this.isReadyToSave = this.form.valid;
-    });
+    setInterval(this.refreshDevices.bind(this), 30000);
   }
 
   refreshDevices(event?: any) {
     this.bluetooth.enable()
       .then(() => {
-          this.bluetooth.discoverUnpaired()
-            .then(devices => {
-              this.firstRefresh = false;
-              event && event.complete();
-              this.availableDevices = devices;
-            })
-            .catch(errorLog);
+        this.bluetooth.discoverUnpaired()
+          .then(devices => {
+            this.firstRefresh = false;
+            event && event.complete();
+            console.log(devices);
+            console.log(this.connectedStations);
+            this.availableDevices = devices.filter((device) => {
+              return !this.connectedStations.find((station) => device.id === station.id);
+            });
+          })
+          .catch(errorLog);
         }
       )
       .catch(errorLog);
@@ -62,17 +56,9 @@ export class AddDevicePage {
 
   connect(device) {
     console.log(device);
-    const deviceConnection = this.bluetooth.connect(device.address);
-    deviceConnection.subscribe({
-      next: function() {
-        this.stations.add(device);
-        this.presentSuccessToast();
-      }.bind(this),
-      error: function(error) {
-        errorLog(error);
-        this.presentErrorAlert(device, error)
-      }.bind(this)
-    });
+    this.stations.connect(device)
+      .then(_ => this.presentSuccessToast())
+      .catch(error => this.presentErrorAlert(device, error));
   }
 
   /**
