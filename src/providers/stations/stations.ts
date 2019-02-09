@@ -13,6 +13,7 @@ export class Stations {
 
   constructor(public storage: Storage, public bluetooth: BluetoothSerial) {
     this.getStored().then((storedStations => {
+      storedStations.forEach((station, index, array) => array[index].connected = false);
       this.stations = storedStations;
       this.stationsSubject.next(storedStations);
       this.stationsSubject.subscribe({
@@ -33,30 +34,21 @@ export class Stations {
           this.upsert(station);
           this.bluetooth.write(JSON.stringify({route: 'Test/do'}))
             .catch(e => console.error(e));
-
           resolve(true);
-          const bus = this.bluetooth.subscribe('\n');
-          bus.subscribe({
-            next: function (data) {
-              console.log(data);
-            }.bind(this),
-            error: function (error) {
-              console.error(error);
-            }.bind(this)
-          });
         }.bind(this),
         error: function(error) {
           station.connected = false;
           this.upsert(station);
-          console.error(error)
-          reject(error)
+          console.error(error);
+          reject(error);
         }.bind(this)
       });
     });
   }
 
   watchConnected(observer) {
-    return this.connectedStationsSubject.subscribe(observer);
+    this.connectedStationsSubject.subscribe(observer);
+    return { unsubscribe: this.connectedStationsSubject.unsubscribe };
   }
 
   upsert(station: Station) {
