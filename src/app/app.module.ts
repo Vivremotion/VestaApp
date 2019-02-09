@@ -9,7 +9,7 @@ import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
 
-import { Settings, User, Api, Stations } from '../providers';
+import { Settings, User, Api, Stations, StationsDataProvider } from '../providers';
 import { StationsApp } from './app.component';
 
 // The translate loader needs to know where to load i18n files
@@ -27,11 +27,6 @@ export function provideSettings(storage: Storage) {
   });
 }
 
-function provideStations(storage: Storage, bluetooth: BluetoothSerial) {
-  const stations = new Stations(storage, bluetooth);
-  console.log(stations);
-  return stations;
-}
 
 @NgModule({
   declarations: [
@@ -62,8 +57,9 @@ function provideStations(storage: Storage, bluetooth: BluetoothSerial) {
     BluetoothSerial,
     SplashScreen,
     StatusBar,
-    { provide: Stations, useFactory: provideStations, deps: [Storage, BluetoothSerial] },
+    Stations,
     { provide: Settings, useFactory: provideSettings, deps: [Storage] },
+    StationsDataProvider,
     // Keep this to enable Ionic's runtime error handling during development
     { provide: ErrorHandler, useClass: IonicErrorHandler }
   ]
