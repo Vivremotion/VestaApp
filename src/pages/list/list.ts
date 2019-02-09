@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, NgZone } from '@angular/core';
 import { IonicPage, ModalController, NavController } from 'ionic-angular';
 
-import { Station } from '../../models/station';
+import { Station } from '../../models';
 import { Stations } from '../../providers';
+import {StationsDataProvider} from "../../providers/stations-data/stations-data";;
 
 @IonicPage()
 @Component({
@@ -11,14 +12,26 @@ import { Stations } from '../../providers';
 })
 export class ListPage {
   currentStations: Station[];
+  stationsData = {};
+  watchers = [];
 
-  constructor(public navCtrl: NavController, public stations: Stations, public modalCtrl: ModalController) {
-    stations.watchConnected({
+  constructor(public navCtrl: NavController, public stations: Stations, public modalCtrl: ModalController, stationsData: StationsDataProvider, zone: NgZone) {
+    const stationsWatcher = stations.watchConnected({
       next: function (connectedStations) {
-        console.log('list', connectedStations);
         this.currentStations = connectedStations;
       }.bind(this)
-    })
+    });
+
+    const stationsDataWatcher = stationsData.watch({
+      next: function (data) {
+        zone.run(() => {
+          if (data.stationId) this.stationsData[data.stationId] = data;
+          console.log('list', this.stationsData)
+        });
+      }.bind(this)
+    });
+
+    this.watchers = [stationsWatcher, stationsDataWatcher];
   }
 
   /**

@@ -20,7 +20,11 @@
           <ion-card-title>{{station.name}}</ion-card-title>
         </ion-card-header>
         <ion-card-content>
-
+          <ng-container *ngIf="stationsData[station.id]">
+            <ion-badge *ngFor="let dataElement of stationsData[station.id].data" color="primary">
+              {{dataElement.type}}: {{dataElement.value}}
+            </ion-badge>
+          </ng-container>
         </ion-card-content>
           <!-- <button ion-button (click)="connect(connect)" class="connect-button" size="large">
               {{ 'CONNECT' | translate }}
