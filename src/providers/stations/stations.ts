@@ -46,6 +46,14 @@ export class Stations {
     });
   }
 
+  disconnect(station) {
+    this.bluetooth.disconnect()
+      .then(_ => {
+        station.connected = false;
+        this.upsert(station);
+      });
+  }
+
   watchConnected(observer) {
     this.connectedStationsSubject.subscribe(observer);
     return { unsubscribe: this.connectedStationsSubject.unsubscribe };
