@@ -10,6 +10,7 @@ import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
 
 import { Settings, User, Api, Stations, StationsDataProvider } from '../providers';
+import { ComponentsModule } from "../components/components.module";
 import { StationsApp } from './app.component';
 
 // The translate loader needs to know where to load i18n files
@@ -35,6 +36,7 @@ export function provideSettings(storage: Storage) {
   imports: [
     BrowserModule,
     HttpClientModule,
+    ComponentsModule,
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
