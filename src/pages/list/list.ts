@@ -3,7 +3,7 @@ import { IonicPage, ModalController, NavController } from 'ionic-angular';
 
 import { Station } from '../../models';
 import { Stations } from '../../providers';
-import {StationsDataProvider} from "../../providers/stations-data/stations-data";;
+import { StationsDataProvider } from "../../providers/stations-data/stations-data";
 
 @IonicPage()
 @Component({
@@ -15,7 +15,13 @@ export class ListPage {
   stationsData = {};
   watchers = [];
 
-  constructor(public navCtrl: NavController, public stations: Stations, public modalCtrl: ModalController, stationsData: StationsDataProvider, zone: NgZone) {
+  constructor(
+    public navCtrl: NavController,
+    public stations: Stations,
+    public modalCtrl: ModalController,
+    stationsData: StationsDataProvider,
+    zone: NgZone
+  ) {
     const stationsWatcher = stations.watchConnected({
       next: function (connectedStations) {
         this.currentStations = connectedStations;

@@ -3,14 +3,16 @@ import { TranslateModule } from '@ngx-translate/core';
 import { IonicPageModule } from 'ionic-angular';
 
 import { ListPage } from './list';
+import {ComponentsModule} from "../../components/components.module";
 
 @NgModule({
   declarations: [
-    ListPage,
+    ListPage
   ],
   imports: [
     IonicPageModule.forChild(ListPage),
-    TranslateModule.forChild()
+    TranslateModule.forChild(),
+    ComponentsModule
   ],
   exports: [
     ListPage
