@@ -1,0 +1,15 @@
+<ion-card *ngIf="station.name">
+  <ion-card-header>
+    <button class="popover-button" ion-button (click)="presentPopover($event)">
+      <ion-icon name="more"></ion-icon>
+    </button>
+    <ion-card-title>{{station.name}}</ion-card-title>
+  </ion-card-header>
+  <ion-card-content>
+    <ng-container *ngIf="data">
+      <ion-badge *ngFor="let dataElement of data.data" color="primary">
+        {{dataElement.type}}: {{dataElement.value}}
+      </ion-badge>
+    </ng-container>
+  </ion-card-content>
+</ion-card>
