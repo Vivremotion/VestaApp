@@ -1,6 +1,6 @@
 import {Component, Input} from '@angular/core';
 import {PopoverComponent} from "../popover/popover";
-import {PopoverController} from "ionic-angular";
+import {ModalController, PopoverController} from "ionic-angular";
 import {Stations} from "../../providers";
 
 /**
@@ -18,15 +18,20 @@ export class ItemComponent {
   @Input() data;
 
   popoverActions = [
-    'CONNECT_WIFI',
+    'connectWifi',
     'DISCONNECT_WIFI',
     'disconnectBluetooth'
   ];
 
-  constructor(public popoverController: PopoverController, public stations: Stations) { }
+  constructor(public popoverController: PopoverController, public stations: Stations, public modalController: ModalController) { }
 
   disconnectBluetooth() {
-    this.stations.disconnect(this.station);
+    this.stations.disconnectBluetooth(this.station);
+  }
+
+  connectWifi() {
+    const addModal = this.modalController.create('ConnectWifiPage');
+    addModal.present();
   }
 
   presentPopover(event: any) {

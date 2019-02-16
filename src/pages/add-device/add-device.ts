@@ -4,8 +4,6 @@ import { IonicPage, NavController, ViewController, AlertController, ToastControl
 import { Stations } from '../../providers/';
 import { Station } from '../../models/station';
 
-const errorLog = (error) => console.error(error);
-
 @IonicPage()
 @Component({
   selector: 'page-add-device',
@@ -31,32 +29,16 @@ export class AddDevicePage {
       }.bind(this),
       error: error => console.error(error)
     });
-    this.refreshDevices();
-    setInterval(this.refreshDevices.bind(this), 30000);
-  }
-
-  refreshDevices(event?: any) {
-    this.bluetooth.enable()
-      .then(() => {
-        this.bluetooth.discoverUnpaired()
-          .then(devices => {
-            this.firstRefresh = false;
-            event && event.complete();
-            console.log(devices);
-            console.log(this.connectedStations);
-            this.availableDevices = devices.filter((device) => {
-              return !this.connectedStations.find((station) => device.id === station.id);
-            });
-          })
-          .catch(errorLog);
-        }
-      )
-      .catch(errorLog);
+    stations.watchAvailable({
+      next: function(availableDevices) {
+        this.availableDevices = availableDevices;
+      }.bind(this),
+      error: error => console.error(error)
+    });
   }
 
   connect(device) {
-    console.log(device);
-    this.stations.connect(device)
+    this.stations.connectBluetooth(device)
       .then(_ => this.presentSuccessToast())
       .catch(error => this.presentErrorAlert(device, error));
   }
