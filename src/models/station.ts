@@ -1,3 +1,4 @@
+import {Network} from "./network";
 export class Station {
 
   constructor(fields: any) {}
@@ -9,5 +10,6 @@ export interface Station {
   name: string;
   class: number;
   address: string;
-  connected?: boolean;
+  bluetoothConnected?: boolean;
+  networks?: Array<Network>;
 }

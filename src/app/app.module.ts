@@ -12,6 +12,8 @@ import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
 import { Settings, User, Api, Stations, StationsDataProvider } from '../providers';
 import { ComponentsModule } from "../components/components.module";
 import { StationsApp } from './app.component';
+import {PopoverComponent} from "../components/popover/popover";
+import { ConnectionsProvider } from '../providers/connections/connections';
 
 // The translate loader needs to know where to load i18n files
 // in Ionic's static asset pipeline.
@@ -51,7 +53,8 @@ export function provideSettings(storage: Storage) {
   ],
   bootstrap: [IonicApp],
   entryComponents: [
-    StationsApp
+    StationsApp,
+    PopoverComponent
   ],
   providers: [
     Api,
@@ -60,8 +63,9 @@ export function provideSettings(storage: Storage) {
     SplashScreen,
     StatusBar,
     Stations,
-    { provide: Settings, useFactory: provideSettings, deps: [Storage] },
     StationsDataProvider,
+    { provide: Settings, useFactory: provideSettings, deps: [Storage] },
+    ConnectionsProvider,
     // Keep this to enable Ionic's runtime error handling during development
     { provide: ErrorHandler, useClass: IonicErrorHandler }
   ]

@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 import { StationsData } from '../../models';
-import { types } from '../../models/stations-data'; // todo: change place
 import { BluetoothSerial } from "@ionic-native/bluetooth-serial/ngx";
 import { BehaviorSubject } from "rxjs";
 import { Stations } from "../stations/stations";
+import { types } from "../../models/stations-data";
+import {ConnectionsProvider} from "../connections/connections";
 
 /*
   Generated class for the StationsDataProvider provider.
@@ -17,7 +18,13 @@ export class StationsDataProvider {
   data = {};
   stations = [];
 
-  constructor(public bluetooth: BluetoothSerial, stations: Stations) {
+  constructor(public bluetooth: BluetoothSerial, public connections: ConnectionsProvider, stations:Stations) {
+    setInterval(() => {
+      if (this.stations.length) {
+        types.forEach(type => this.askData(type))
+      }
+    }, 10000);
+
     stations.watchConnected({
       next: function (stations) {
         this.stations = stations;
@@ -27,36 +34,20 @@ export class StationsDataProvider {
       }.bind(this)
     });
 
-    // Watch for incoming data on bluetooth
-    const bus = bluetooth.subscribe('\n');
-    bus.subscribe({
+    connections.watchForIncomingData({
       next: function(data) {
-        console.log('data provider', data)
-        try {
-          if (typeof data === 'string') data = JSON.parse(data);
-        } catch (error) {
-          console.error(error);
-        }
-        if (data.stationId) {
-          const update = this.mergeAndGetChanges(data);
-          this.dataSubject.next(update);
-          console.log('update', update)
-          console.log('data', this.data)
-        } else {
-          console.log(data);
+        if (data.route) {
+          const type = data.route.split('/')[0];
+          if (data.stationId && types.indexOf(type) !== -1) {
+            const update = this.mergeAndGetChanges(data);
+            this.dataSubject.next(update);
+          }
         }
       }.bind(this),
       error: function (error) {
         console.error(error);
       }.bind(this)
     });
-
-    setInterval(() => {
-      console.log(this.stations.length)
-      if (this.stations.length) {
-        types.forEach(type => this.askData(type))
-      }
-    }, 10000);
   }
 
   watch(observer) {
@@ -65,10 +56,9 @@ export class StationsDataProvider {
   }
 
   askData(type) {
-    console.log(type)
-    this.bluetooth.write(JSON.stringify({
+    this.connections.send({
       route: `${type}/get`
-    }))
+    })
       .then(data => console.log(data))
       .catch(error => console.error(error));
   }
@@ -88,9 +78,6 @@ export class StationsDataProvider {
       stationData.push(...data.data);
     } else this.data[data.stationId] = data.data;
 
-    return {
-      stationId: data.stationId,
-      data: data.data
-    };
+    return data;
   }
 }
