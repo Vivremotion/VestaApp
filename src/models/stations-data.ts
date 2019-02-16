@@ -6,6 +6,7 @@ export class StationsData {
 
 export interface StationsData {
   stationId: string;
+  route: string,
   data: [{
     type: string,
     value: any,
@@ -13,4 +14,5 @@ export interface StationsData {
   }];
 }
 
+// todo: change place
 export const types = ['TemperatureHumidity'];
