@@ -25,7 +25,7 @@
       <ng-container *ngFor="let network of networks">
         <ion-item *ngIf="network.ssid">
             {{ network.ssid }}
-            <button ion-button (click)="connectNetwork(network)" class="connect-button" size="large">
+            <button ion-button (click)="connect(network.ssid)" class="connect-button" size="large">
                 {{ 'CONNECT' | translate }}
             </button>
         </ion-item>
