@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { PopoverComponent } from './popover/popover';
+import { ConnectWifiComponent } from './connect-wifi/connect-wifi';
 import { IonicModule } from "ionic-angular";
 import {TranslateModule} from "@ngx-translate/core";
 import { ItemComponent } from './item/item';
@@ -7,7 +8,8 @@ import { ItemComponent } from './item/item';
 @NgModule({
 	declarations: [
 	  PopoverComponent,
-    ItemComponent
+    ItemComponent,
+    ConnectWifiComponent
   ],
 	imports: [
 	  IonicModule,
@@ -15,7 +17,8 @@ import { ItemComponent } from './item/item';
   ],
 	exports: [
 	  PopoverComponent,
-    ItemComponent
+    ItemComponent,
+    ConnectWifiComponent
   ]
 })
 export class ComponentsModule {}
