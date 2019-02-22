@@ -40,7 +40,7 @@ export class ItemComponent {
     });
     popover.onDidDismiss(action => {
       this[action]();
-    })
+    });
     return popover.present({
       ev: event
     });
