@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Stations, ConnectionsProvider } from '../../providers';
-import {IonicPage, PopoverController, ViewController} from 'ionic-angular';
+import {IonicPage, PopoverController, ViewController, LoadingController, Loading} from 'ionic-angular';
 import {Network} from "../../models/network";
 import { ConnectWifiComponent } from "../../components/connect-wifi/connect-wifi";
 
@@ -18,16 +18,30 @@ import { ConnectWifiComponent } from "../../components/connect-wifi/connect-wifi
 })
 export class ConnectWifiPage {
   networks: Network[];
+  loading: Loading;
 
-  constructor(public stations: Stations, public connections: ConnectionsProvider, public viewController: ViewController, public popoverController: PopoverController) {
+  constructor(
+    public stations: Stations,
+    public connections: ConnectionsProvider,
+    public viewController: ViewController,
+    public popoverController: PopoverController,
+    public loadingController: LoadingController
+  ) {
+    this.loading = this.loadingController.create({
+      content: 'FECTHING_NETWORKS'
+    })
+    this.loading.present();
+
     connections.watchForIncomingData({
       next: function(received) {
         if (received.stationId && received.route) {
           if (received.route === 'Wifi/getAll') {
+            this.loading.dismiss();
             this.networks = received.data[0].value;
           }
           if (received.route === 'Wifi/connect') {
             console.log(received);
+            this.loading.dismiss();
             if (!received.data.connected) {
               this.presentPopover(received.data.ssid);
             } else {
@@ -51,7 +65,11 @@ export class ConnectWifiPage {
     });
   }
 
-  connect(ssid) {
+  async connect(ssid) {
+    this.loading = await this.loadingController.create({
+      content: 'CONNECTING'
+    });
+    this.loading.present();
     this.connections.send({
       route: 'Wifi/connect',
       ssid

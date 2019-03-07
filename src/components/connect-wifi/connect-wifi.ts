@@ -1,5 +1,5 @@
 import {Component, Input} from '@angular/core';
-import {NavParams, ViewController} from "ionic-angular";
+import {Loading, LoadingController, NavParams, ViewController} from "ionic-angular";
 import {ConnectionsProvider} from "../../providers/connections/connections";
 
 /**
@@ -16,13 +16,21 @@ export class ConnectWifiComponent {
   ssid: string;
   passkey: string;
 
-  constructor(public viewController: ViewController, public navParams: NavParams, public connections: ConnectionsProvider) {
+  loading: Loading;
+
+  constructor(
+    public viewController: ViewController,
+    public navParams: NavParams,
+    public connections: ConnectionsProvider,
+    public loadingController: LoadingController
+  ) {
     this.ssid = this.navParams.get('ssid');
 
     connections.watchForIncomingData({
       next: function(received) {
         if (received.stationId && received.route) {
           if (received.route === 'Wifi/connect') {
+            this.loading.dismiss();
             const connected = received.data.value;
             if (connected) {
               this.close();
@@ -38,7 +46,12 @@ export class ConnectWifiComponent {
     });
   }
 
-  connect() {
+  async connect() {
+    this.loading = await this.loadingController.create({
+      content: 'CONNECTING'
+    });
+    this.loading.present();
+
     this.connections.send({
       route: 'Wifi/connect',
       ssid: this.ssid,
