@@ -39,7 +39,10 @@ export class AddDevicePage {
 
   connect(device) {
     this.stations.connectBluetooth(device)
-      .then(_ => this.presentSuccessToast())
+      .then(_ => {
+        this.presentSuccessToast();
+        this.viewCtrl.dismiss();
+      })
       .catch(error => this.presentErrorAlert(device, error));
   }
 
