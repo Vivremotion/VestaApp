@@ -109,7 +109,7 @@ export class Stations {
   }
 
   upsert(station: Station) {
-    let index = this.stations.indexOf(station);
+    let index = this.stations.indexOf(this.find(station.id));
     if (index === -1) {
       this.stations.push(station);
     } else {
