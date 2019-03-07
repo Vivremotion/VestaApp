@@ -12,6 +12,7 @@ export class Stations {
   stationsSubject: BehaviorSubject<Station[]> = new BehaviorSubject([]);
   connectedStations = [];
   connectedStationsSubject: BehaviorSubject<Station[]> = new BehaviorSubject([]);
+  availableDevices = [];
   availableStationsSubject: BehaviorSubject<Station[]> = new BehaviorSubject([]);
 
   constructor(public storage: Storage, public bluetooth: BluetoothSerial) {
@@ -31,18 +32,22 @@ export class Stations {
     setInterval(this.scanBluetooth.bind(this), 60000);
   }
 
+  setAvailableDevices() {
+    console.log('Available bluetooth devices:', this.availableDevices);
+    const availableDevices = this.availableDevices.filter((device) => {
+      return !this.connectedStations.find((station) => device.id === station.id);
+    });
+    this.availableStationsSubject.next(availableDevices);
+  }
+
   scanBluetooth() {
     this.bluetooth.enable()
       .then(() => {
         this.bluetooth.discoverUnpaired()
           .then(devices => {
-            console.log(devices);
+            this.availableDevices = devices;
             console.log(this.stations);
-            const availableDevices = devices.filter((device) => {
-              return !this.connectedStations.find((station) => device.id === station.id);
-            });
-            this.availableStationsSubject.next(availableDevices);
-
+            this.setAvailableDevices()
           })
           .catch(error => console.error(error));
         }
@@ -59,6 +64,7 @@ export class Stations {
           this.upsert(station);
           this.bluetooth.write(JSON.stringify({route: 'Test/do'}))
             .catch(e => console.error(e));
+          this.setAvailableDevices();
           resolve(true);
         }.bind(this),
         error: function(error) {
@@ -76,10 +82,11 @@ export class Stations {
       .then(_ => {
         station.bluetoothConnected = false;
         this.upsert(station);
+        this.setAvailableDevices();
       });
   }
 
-  requestAvailableNetworks(station) {
+  requestAvailableNetworks() {
     this.bluetooth.write(JSON.stringify({
       route: 'Wifi/getAll'
     }));
