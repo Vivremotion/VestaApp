@@ -29,7 +29,7 @@ export class Stations {
     }));
 
     this.scanBluetooth();
-    setInterval(this.scanBluetooth.bind(this), 60000);
+    setInterval(this.scanBluetooth.bind(this), 30000);
   }
 
   setAvailableDevices() {
