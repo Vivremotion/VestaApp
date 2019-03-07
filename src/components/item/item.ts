@@ -39,7 +39,7 @@ export class ItemComponent {
       actions: this.popoverActions
     });
     popover.onDidDismiss(action => {
-      this[action]();
+      if (action) this[action]();
     });
     return popover.present({
       ev: event
