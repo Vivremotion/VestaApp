@@ -59,7 +59,6 @@ export class StationsDataProvider {
     this.connections.send({
       route: `${type}/get`
     })
-      .then(data => console.log(data))
       .catch(error => console.error(error));
   }
 
