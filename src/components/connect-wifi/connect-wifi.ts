@@ -23,7 +23,7 @@ export class ConnectWifiComponent {
       next: function(received) {
         if (received.stationId && received.route) {
           if (received.route === 'Wifi/connect') {
-            const connected = received.data[0].value;
+            const connected = received.data.value;
             if (connected) {
               this.close();
             } else {

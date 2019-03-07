@@ -26,7 +26,7 @@ export class ConnectWifiPage {
           if (received.route === 'Wifi/getAll') {
             this.networks = received.data[0].value;
           }
-          if (received.route === 'Wifi/connectIfExists') {
+          if (received.route === 'Wifi/connect') {
             console.log(received);
             if (!received.data.connected) {
               this.presentPopover(received.data.ssid);
@@ -53,7 +53,7 @@ export class ConnectWifiPage {
 
   connect(ssid) {
     this.connections.send({
-      route: 'Wifi/connectIfExists',
+      route: 'Wifi/connect',
       ssid
     });
   }
