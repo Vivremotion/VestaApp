@@ -36,12 +36,12 @@ export class ConnectWifiPage {
       next: function(received) {
         if (received.stationId && received.route) {
           if (received.route === 'Wifi/getAll') {
-            this.loading.dismiss();
+            if (this.loading) this.loading.dismiss();
             this.networks = received.data[0].value;
           }
           if (received.route === 'Wifi/connect') {
             console.log(received);
-            this.loading.dismiss();
+            if (this.loading) this.loading.dismiss();
             if (!received.data.connected) {
               this.presentPopover(received.data.ssid);
             } else {
