@@ -41,6 +41,7 @@ export class ConnectWifiComponent {
         }
       }.bind(this),
       error: function (error) {
+        if (this.loading) this.loading.dismiss();
         console.error(error);
       }.bind(this)
     });
@@ -48,7 +49,9 @@ export class ConnectWifiComponent {
 
   async connect() {
     this.loading = await this.loadingController.create({
-      content: 'CONNECTING'
+      content: 'CONNECTING',
+      enableBackdropDismiss: true,
+      dismissOnPageChange: true
     });
     this.loading.present();
 
@@ -60,6 +63,7 @@ export class ConnectWifiComponent {
   }
 
   close() {
+    if (this.loading) this.loading.dismiss();
     this.viewController.dismiss();
   }
 }

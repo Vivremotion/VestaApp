@@ -28,8 +28,10 @@ export class ConnectWifiPage {
     public loadingController: LoadingController
   ) {
     this.loading = this.loadingController.create({
-      content: 'FECTHING_NETWORKS'
-    })
+      content: 'FECTHING_NETWORKS',
+      enableBackdropDismiss: true,
+      dismissOnPageChange: true
+    });
     this.loading.present();
 
     connections.watchForIncomingData({
@@ -51,6 +53,7 @@ export class ConnectWifiPage {
         }
       }.bind(this),
       error: function (error) {
+        if (this.loading) this.loading.dismiss();
         console.error(error);
       }.bind(this)
     });
@@ -67,7 +70,9 @@ export class ConnectWifiPage {
 
   async connect(ssid) {
     this.loading = await this.loadingController.create({
-      content: 'CONNECTING'
+      content: 'CONNECTING',
+      enableBackdropDismiss: true,
+      dismissOnPageChange: true
     });
     this.loading.present();
     this.connections.send({
@@ -85,6 +90,7 @@ export class ConnectWifiPage {
   }
 
   cancel() {
+    if (this.loading) this.loading.dismiss();
     this.viewController.dismiss();
   }
 }
