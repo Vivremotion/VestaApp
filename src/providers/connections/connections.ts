@@ -27,7 +27,6 @@ export class ConnectionsProvider {
     const bus = bluetooth.subscribe('\n');
     bus.subscribe({
       next: function(data) {
-        console.log(data)
         if (isJSON(data)) data = JSON.parse(data);
         this.dataSubject.next(data);
       }.bind(this),
