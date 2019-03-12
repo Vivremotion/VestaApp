@@ -4,7 +4,6 @@ import { BluetoothSerial } from '@ionic-native/bluetooth-serial/ngx';
 import { BehaviorSubject } from "rxjs";
 
 import { Station } from '../../models/station';
-import {Network} from "../../models/network";
 
 @Injectable()
 export class Stations {
@@ -14,8 +13,12 @@ export class Stations {
   connectedStationsSubject: BehaviorSubject<Station[]> = new BehaviorSubject([]);
   availableDevices = [];
   availableStationsSubject: BehaviorSubject<Station[]> = new BehaviorSubject([]);
+  appState = { isActive: true };
 
   constructor(public storage: Storage, public bluetooth: BluetoothSerial) {
+    document.addEventListener('pause', () => this.appState.isActive = false);
+    document.addEventListener('resume', () => this.appState.isActive = true);
+
     this.getStored().then((storedStations => {
       storedStations.forEach((station, index, array) => array[index].bluetoothConnected = false);
       this.stations = storedStations;
@@ -29,11 +32,9 @@ export class Stations {
     }));
 
     this.scanBluetooth();
-    setInterval(this.scanBluetooth.bind(this), 30000);
   }
 
   setAvailableDevices() {
-    console.log('Available bluetooth devices:', this.availableDevices);
     const availableDevices = this.availableDevices.filter((device) => {
       return !this.connectedStations.find((station) => device.id === station.id);
     });
@@ -47,7 +48,10 @@ export class Stations {
           .then(devices => {
             this.availableDevices = devices;
             console.log(this.stations);
-            this.setAvailableDevices()
+            this.setAvailableDevices();
+            if (this.appState.isActive) {
+              this.scanBluetooth();
+            }
           })
           .catch(error => console.error(error));
         }
@@ -62,15 +66,12 @@ export class Stations {
         next: function() {
           station.bluetoothConnected = true;
           this.upsert(station);
-          this.bluetooth.write(JSON.stringify({route: 'Test/do'}))
-            .catch(e => console.error(e));
           this.setAvailableDevices();
           resolve(true);
         }.bind(this),
         error: function(error) {
           station.bluetoothConnected = false;
           this.upsert(station);
-          console.error(error);
           reject(error);
         }.bind(this)
       });
@@ -84,18 +85,6 @@ export class Stations {
         this.upsert(station);
         this.setAvailableDevices();
       });
-  }
-
-  requestAvailableNetworks() {
-    this.bluetooth.write(JSON.stringify({
-      route: 'Wifi/getAll'
-    }));
-  }
-
-  setAvailableNetworks(stationId: string, networks: Array<Network>) {
-    const station = this.find(stationId);
-    station.networks = networks;
-    this.upsert(station);
   }
 
   watchConnected(observer) {
