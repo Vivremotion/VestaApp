@@ -16,7 +16,8 @@ export class ConnectWifiComponent {
   ssid: string;
   passkey: string;
   loading: Loading;
-  dataWacther;
+  wrongPassword: boolean = false;
+  dataWatcher;
 
   constructor(
     public viewController: ViewController,
@@ -26,9 +27,9 @@ export class ConnectWifiComponent {
   ) {
     this.ssid = this.navParams.get('ssid');
 
-    this.dataWacther = connections.watchForIncomingData({
+    this.dataWatcher = connections.watchForIncomingData({
       next: function(received) {
-        if (this.dataWacther && !this.dataWatcher.closed) {
+        if (this.dataWatcher && !this.dataWatcher.closed) {
           if (received.stationId && received.route) {
             if (received.route === 'Wifi/connect') {
               if (this.loading) this.loading.dismiss();
@@ -36,6 +37,7 @@ export class ConnectWifiComponent {
               if (connected) {
                 this.close();
               } else {
+                this.wrongPassword = true;
                 console.log("Not connected");
               }
             }
@@ -50,7 +52,7 @@ export class ConnectWifiComponent {
   }
 
   ionViewWillLeave() {
-    this.dataWacther.unsubscribe()
+    this.dataWatcher.unsubscribe()
   }
 
   async connect() {

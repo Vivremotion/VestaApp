@@ -1,6 +1,7 @@
 <!-- Generated template for the PopoverComponent component -->
-<ion-list text-center>
+<div text-center>
   <h3>{{ ssid }}</h3>
   <ion-input type="password" [(ngModel)]="passkey"></ion-input>
   <button ion-button (click)="connect()">{{ 'CONNECT' | translate }}</button>
-</ion-list>
+  <p *ngIf="wrongPassword" style="color:#c33">{{'WRONG_PASSWORD' | translate}}</p>
+</div>

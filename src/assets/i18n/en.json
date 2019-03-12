@@ -52,6 +52,8 @@
 
   "CARDS_TITLE": "Social",
 
+  "WRONG_PASSWORD": "Wrong password",
+
   "SEARCH_TITLE": "Search",
   "SEARCH_PLACEHOLDER": "Search the items list, e.g. \"Donald Duck\""
 }
