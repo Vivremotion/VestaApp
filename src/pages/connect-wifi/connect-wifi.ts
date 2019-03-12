@@ -19,6 +19,9 @@ import { ConnectWifiComponent } from "../../components/connect-wifi/connect-wifi
 export class ConnectWifiPage {
   networks: Network[];
   loading: Loading;
+  popoverDisplayed: boolean = false;
+  refreshTimeout;
+  dataWatcher;
 
   constructor(
     public stations: Stations,
@@ -34,20 +37,24 @@ export class ConnectWifiPage {
     });
     this.loading.present();
 
-    connections.watchForIncomingData({
+    this.dataWatcher = connections.watchForIncomingData({
       next: function(received) {
-        if (received.stationId && received.route) {
-          if (received.route === 'Wifi/getAll') {
-            if (this.loading) this.loading.dismiss();
-            this.networks = received.data[0].value;
-          }
-          if (received.route === 'Wifi/connect') {
-            console.log(received);
-            if (this.loading) this.loading.dismiss();
-            if (!received.data.connected) {
-              this.presentPopover(received.data.ssid);
-            } else {
-              viewController.dismiss();
+        if (this.dataWatcher && !this.dataWatcher.closed) {
+          if (received.stationId && received.route) {
+            if (received.route === 'Wifi/getAll') {
+              if (this.loading) this.loading.dismiss();
+              this.networks = (received.data[0].value || []).sort((a, b) => a.quality - b.quality);
+              this.refreshTimeout = setTimeout(this.refresh.bind(this), 5000);
+            }
+            if (received.route === 'Wifi/connect') {
+              if (this.loading) this.loading.dismiss();
+              if (!received.data.connected && !this.popoverDisplayed) {
+                this.presentPopover(received.data.ssid);
+                this.popoverDisplayed = true;
+              } else {
+                this.popoverDisplayed = false;
+                viewController.dismiss();
+              }
             }
           }
         }
@@ -60,6 +67,11 @@ export class ConnectWifiPage {
 
     this.refresh();
     // todo: handle remote management?
+  }
+
+  ionViewWillLeave() {
+    this.dataWatcher.unsubscribe();
+    clearTimeout(this.refreshTimeout);
   }
 
   refresh() {

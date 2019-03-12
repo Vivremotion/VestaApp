@@ -15,8 +15,8 @@ import {ConnectionsProvider} from "../../providers/connections/connections";
 export class ConnectWifiComponent {
   ssid: string;
   passkey: string;
-
   loading: Loading;
+  dataWacther;
 
   constructor(
     public viewController: ViewController,
@@ -26,16 +26,18 @@ export class ConnectWifiComponent {
   ) {
     this.ssid = this.navParams.get('ssid');
 
-    connections.watchForIncomingData({
+    this.dataWacther = connections.watchForIncomingData({
       next: function(received) {
-        if (received.stationId && received.route) {
-          if (received.route === 'Wifi/connect') {
-            if (this.loading) this.loading.dismiss();
-            const connected = received.data.value;
-            if (connected) {
-              this.close();
-            } else {
-              console.log("Not connected");
+        if (this.dataWacther && !this.dataWatcher.closed) {
+          if (received.stationId && received.route) {
+            if (received.route === 'Wifi/connect') {
+              if (this.loading) this.loading.dismiss();
+              const connected = received.data.value;
+              if (connected) {
+                this.close();
+              } else {
+                console.log("Not connected");
+              }
             }
           }
         }
@@ -45,6 +47,10 @@ export class ConnectWifiComponent {
         console.error(error);
       }.bind(this)
     });
+  }
+
+  ionViewWillLeave() {
+    this.dataWacther.unsubscribe()
   }
 
   async connect() {
