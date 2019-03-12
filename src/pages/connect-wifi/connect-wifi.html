@@ -15,12 +15,6 @@
 </ion-header>
 
 <ion-content text-center>
-  <ion-spinner *ngIf="firstRefresh" color="primary" id="spinner"></ion-spinner>
-  <ion-refresher (ionRefresh)="refreshDevices($event)">
-    <ion-refresher-content
-      pullingIcon="arrow-dropdown"
-    ></ion-refresher-content>
-  </ion-refresher>
   <ion-list>
       <ng-container *ngFor="let network of networks">
         <ion-item *ngIf="network.ssid">
