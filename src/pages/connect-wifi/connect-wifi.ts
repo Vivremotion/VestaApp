@@ -48,9 +48,11 @@ export class ConnectWifiPage {
             }
             if (received.route === 'Wifi/connect') {
               if (this.loading) this.loading.dismiss();
-              if (!received.data.connected && !this.popoverDisplayed) {
-                this.presentPopover(received.data.ssid);
-                this.popoverDisplayed = true;
+              if (!received.data.connected) {
+                if (!this.popoverDisplayed) {
+                  this.presentPopover(received.data.ssid);
+                  this.popoverDisplayed = true;
+                }
               } else {
                 this.popoverDisplayed = false;
                 viewController.dismiss();
@@ -98,6 +100,7 @@ export class ConnectWifiPage {
       translucent: true,
       ssid: ssid
     });
+    popover.onDidDismiss(() => this.popoverDisplayed = false);
     return popover.present();
   }
 
