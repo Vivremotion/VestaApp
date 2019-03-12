@@ -19,8 +19,12 @@ export class StationsDataProvider {
   stations = [];
 
   constructor(public bluetooth: BluetoothSerial, public connections: ConnectionsProvider, stations:Stations) {
+    const appState = { isActive: true };
+    document.addEventListener('pause', () => appState.isActive = false);
+    document.addEventListener('resume', () => appState.isActive = true);
+
     setInterval(() => {
-      if (this.stations.length) {
+      if (appState.isActive && this.stations.length) {
         types.forEach(type => this.askData(type))
       }
     }, 10000);
