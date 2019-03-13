@@ -32,7 +32,6 @@ export class ConnectWifiPage {
   ) {
     this.loading = this.loadingController.create({
       content: 'FECTHING_NETWORKS',
-      enableBackdropDismiss: true,
       dismissOnPageChange: true
     });
     this.loading.present();
@@ -72,6 +71,7 @@ export class ConnectWifiPage {
   }
 
   ionViewWillLeave() {
+    if (this.loading) this.loading.dismiss();
     this.dataWatcher.unsubscribe();
     clearTimeout(this.refreshTimeout);
   }
@@ -85,7 +85,6 @@ export class ConnectWifiPage {
   async connect(ssid) {
     this.loading = await this.loadingController.create({
       content: 'CONNECTING',
-      enableBackdropDismiss: true,
       dismissOnPageChange: true
     });
     this.loading.present();

@@ -52,13 +52,13 @@ export class ConnectWifiComponent {
   }
 
   ionViewWillLeave() {
+    if (this.loading) this.loading.dismiss();
     this.dataWatcher.unsubscribe()
   }
 
   async connect() {
     this.loading = await this.loadingController.create({
       content: 'CONNECTING',
-      enableBackdropDismiss: true,
       dismissOnPageChange: true
     });
     this.loading.present();
