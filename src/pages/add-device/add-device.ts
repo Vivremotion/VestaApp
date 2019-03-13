@@ -1,6 +1,9 @@
 import { Component } from '@angular/core';
 import { BluetoothSerial } from '@ionic-native/bluetooth-serial/ngx';
-import { IonicPage, NavController, ViewController, AlertController, ToastController } from 'ionic-angular';
+import {
+  IonicPage, NavController, ViewController, AlertController, ToastController,
+  LoadingController
+} from 'ionic-angular';
 import { Stations } from '../../providers/';
 import { Station } from '../../models/station';
 
@@ -14,12 +17,14 @@ export class AddDevicePage {
   availableDevices: any[];
   connectedStations: Station[];
   firstRefresh: Boolean = true;
+  loading;
 
   constructor(
     public navCtrl: NavController,
     public viewCtrl: ViewController,
     public toastController: ToastController,
     public alertController: AlertController,
+    public loadingController: LoadingController,
     public bluetooth: BluetoothSerial,
     public stations: Stations,
   ) {
@@ -37,13 +42,23 @@ export class AddDevicePage {
     });
   }
 
-  connect(device) {
+  async connect(device) {
+    this.loading = await this.loadingController.create({
+      content: 'CONNECTING',
+      dismissOnPageChange: true
+    });
+    this.loading.present();
+
     this.stations.connectBluetooth(device)
       .then(_ => {
+        this.loading.dismiss();
         this.presentSuccessToast();
         this.viewCtrl.dismiss();
       })
-      .catch(error => this.presentErrorAlert(device, error));
+      .catch(error => {
+        this.loading.dismiss();
+        this.presentErrorAlert(device, error);
+      });
   }
 
   /**
@@ -51,6 +66,10 @@ export class AddDevicePage {
    */
   cancel() {
     this.viewCtrl.dismiss();
+  }
+
+  ionViewDidLeave() {
+    if (this.loading) this.loading.dismiss();
   }
 
   async presentSuccessToast() {
