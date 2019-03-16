@@ -18,9 +18,9 @@ export class ItemComponent {
   @Input() data;
 
   popoverActions = [
-    'connectWifi',
-    'DISCONNECT_WIFI',
-    'disconnectBluetooth'
+    'wifi',
+    'disconnectBluetooth',
+    'settings'
   ];
 
   constructor(public popoverController: PopoverController, public stations: Stations, public modalController: ModalController) { }
@@ -29,7 +29,7 @@ export class ItemComponent {
     this.stations.disconnectBluetooth(this.station);
   }
 
-  connectWifi() {
+  wifi() {
     const addModal = this.modalController.create('ConnectWifiPage');
     addModal.present();
   }

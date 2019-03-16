@@ -18,8 +18,9 @@ import { ConnectWifiComponent } from "../../components/connect-wifi/connect-wifi
 })
 export class ConnectWifiPage {
   networks: Network[];
-  loading: Loading;
+  currentSSID: String = '';
   popoverDisplayed: boolean = false;
+  loading: Loading;
   refreshTimeout;
   dataWatcher;
 
@@ -45,6 +46,12 @@ export class ConnectWifiPage {
               this.networks = (received.data[0].value || []).sort((a, b) => a.quality - b.quality);
               this.refreshTimeout = setTimeout(this.refresh.bind(this), 5000);
             }
+
+            if (received.route === 'Wifi/getCurrentSSID') {
+              this.currentSSID = received.data.ssid;
+              console.log('Currently connected to: ', this.currentSSID);
+            }
+
             if (received.route === 'Wifi/connect') {
               if (this.loading) this.loading.dismiss();
               if (!received.data.connected) {
@@ -66,6 +73,9 @@ export class ConnectWifiPage {
       }.bind(this)
     });
 
+    this.connections.send({
+      route: 'Wifi/getCurrentSSID'
+    });
     this.refresh();
     // todo: handle remote management?
   }
@@ -90,6 +100,18 @@ export class ConnectWifiPage {
     this.loading.present();
     this.connections.send({
       route: 'Wifi/connect',
+      ssid
+    });
+  }
+
+  async disconnect(ssid) {
+    this.loading = await this.loadingController.create({
+      content: 'DISCONNECTING',
+      dismissOnPageChange: true
+    });
+    this.loading.present();
+    this.connections.send({
+      route: 'Wifi/disconnect',
       ssid
     });
   }

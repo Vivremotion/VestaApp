@@ -19,8 +19,11 @@
       <ng-container *ngFor="let network of networks">
         <ion-item *ngIf="network.ssid">
             {{ network.ssid }}
-            <button ion-button (click)="connect(network.ssid)" class="connect-button" size="large">
+            <button *ngIf="network.ssid !== currentSSID" ion-button (click)="connect(network.ssid)" class="connect-button" size="large">
                 {{ 'CONNECT' | translate }}
+            </button>
+            <button *ngIf="network.ssid === currentSSID" ion-button (click)="disconnect(network.ssid)" class="connect-button" size="large">
+                {{ 'DISCONNECT' | translate }}
             </button>
         </ion-item>
       </ng-container>
