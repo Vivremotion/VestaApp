@@ -1,6 +1,7 @@
 import {Component, Input} from '@angular/core';
 import {Loading, LoadingController, NavParams, ViewController} from "ionic-angular";
 import {ConnectionsProvider} from "../../providers/connections/connections";
+import {Station} from "../../models/station";
 
 /**
  * Generated class for the PopoverComponent component.
@@ -16,6 +17,7 @@ export class ConnectWifiComponent {
   ssid: string;
   passkey: string;
   loading: Loading;
+  station: Station;
   wrongPassword: boolean = false;
   dataWatcher;
 
@@ -26,6 +28,7 @@ export class ConnectWifiComponent {
     public loadingController: LoadingController
   ) {
     this.ssid = this.navParams.get('ssid');
+    this.station = this.navParams.get('station');
 
     this.dataWatcher = connections.watchForIncomingData({
       next: function(received) {
@@ -33,7 +36,7 @@ export class ConnectWifiComponent {
           if (received.stationId && received.route) {
             if (received.route === 'Wifi/connect') {
               if (this.loading) this.loading.dismiss();
-              const connected = received.data.value;
+              const connected = received.data.connected;
               if (connected) {
                 this.close();
               } else {
@@ -65,6 +68,7 @@ export class ConnectWifiComponent {
 
     this.connections.send({
       route: 'Wifi/connect',
+      address: this.station.address,
       ssid: this.ssid,
       passkey: this.passkey
     });

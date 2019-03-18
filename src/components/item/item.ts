@@ -30,13 +30,23 @@ export class ItemComponent {
   }
 
   wifi() {
-    const addModal = this.modalController.create('ConnectWifiPage');
+    const addModal = this.modalController.create('ConnectWifiPage', {
+      station: this.station
+    });
+    addModal.present();
+  }
+
+  settings() {
+    const addModal = this.modalController.create('StationSettingsPage', {
+      station: this.station
+    });
     addModal.present();
   }
 
   presentPopover(event: any) {
     const popover = this.popoverController.create(PopoverComponent, {
-      actions: this.popoverActions
+      actions: this.popoverActions,
+      station: this.station
     });
     popover.onDidDismiss(action => {
       if (action) this[action]();

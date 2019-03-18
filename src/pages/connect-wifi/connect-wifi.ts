@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
 import { Stations, ConnectionsProvider } from '../../providers';
-import {IonicPage, PopoverController, ViewController, LoadingController, Loading} from 'ionic-angular';
+import {IonicPage, PopoverController, ViewController, LoadingController, Loading, NavParams} from 'ionic-angular';
 import {Network} from "../../models/network";
 import { ConnectWifiComponent } from "../../components/connect-wifi/connect-wifi";
+import {Station} from "../../models/station";
 
 /**
  * Generated class for the ConnectWifiPage page.
@@ -17,6 +18,7 @@ import { ConnectWifiComponent } from "../../components/connect-wifi/connect-wifi
   templateUrl: 'connect-wifi.html',
 })
 export class ConnectWifiPage {
+  station: Station;
   networks: Network[];
   currentSSID: String = '';
   popoverDisplayed: boolean = false;
@@ -28,9 +30,11 @@ export class ConnectWifiPage {
     public stations: Stations,
     public connections: ConnectionsProvider,
     public viewController: ViewController,
+    public navParams: NavParams,
     public popoverController: PopoverController,
     public loadingController: LoadingController
   ) {
+    this.station = this.navParams.get('station');
     this.loading = this.loadingController.create({
       content: 'FECTHING_NETWORKS',
       dismissOnPageChange: true
@@ -74,7 +78,8 @@ export class ConnectWifiPage {
     });
 
     this.connections.send({
-      route: 'Wifi/getCurrentSSID'
+      route: 'Wifi/getCurrentSSID',
+      address: this.station.address
     });
     this.refresh();
     // todo: handle remote management?
@@ -88,7 +93,8 @@ export class ConnectWifiPage {
 
   refresh() {
     this.connections.send({
-      route: 'Wifi/getAll'
+      route: 'Wifi/getAll',
+      address: this.station.address
     });
   }
 
@@ -100,6 +106,7 @@ export class ConnectWifiPage {
     this.loading.present();
     this.connections.send({
       route: 'Wifi/connect',
+      address: this.station.address,
       ssid
     });
   }
@@ -112,13 +119,14 @@ export class ConnectWifiPage {
     this.loading.present();
     this.connections.send({
       route: 'Wifi/disconnect',
+      address: this.station.address,
       ssid
     });
   }
 
   presentPopover(ssid) {
     const popover = this.popoverController.create(ConnectWifiComponent, {
-      translucent: true,
+      station: this.station,
       ssid: ssid
     });
     popover.onDidDismiss(() => this.popoverDisplayed = false);

@@ -9,7 +9,6 @@ import { TranslateModule } from "@ngx-translate/core";
   ],
   imports: [
     IonicPageModule.forChild(ConnectWifiPage),
-    IonicPageModule.forChild(ConnectWifiPage),
     TranslateModule.forChild()
   ],
 })

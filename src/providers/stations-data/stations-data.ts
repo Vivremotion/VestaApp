@@ -25,16 +25,14 @@ export class StationsDataProvider {
 
     setInterval(() => {
       if (appState.isActive && this.stations.length) {
-        types.forEach(type => this.askData(type))
+        this.askDataToAllStations();
       }
     }, 10000);
 
     stations.watchConnected({
       next: function (stations) {
         this.stations = stations;
-        types.forEach(type => {
-          this.askData(type);
-        })
+        this.askDataToAllStations();
       }.bind(this)
     });
 
@@ -59,11 +57,20 @@ export class StationsDataProvider {
     return { unsubscribe: this.dataSubject.unsubscribe };
   }
 
-  askData(type) {
+  askData(station, type) {
     this.connections.send({
-      route: `${type}/get`
+      route: `${type}/get`,
+      address: station.address
     })
       .catch(error => console.error(error));
+  }
+
+  askDataToAllStations() {
+    types.forEach(type => {
+      this.stations.forEach((station) => {
+        this.askData(station, type);
+      })
+    })
   }
 
   mergeAndGetChanges(data: StationsData): StationsData {
