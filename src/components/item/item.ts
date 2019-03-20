@@ -25,6 +25,13 @@ export class ItemComponent {
 
   constructor(public popoverController: PopoverController, public stations: Stations, public modalController: ModalController) { }
 
+  ngOnChanges() {
+    if (this.station.settings && this.station.settings.new) {
+      this.station.settings.new = false;
+      this.settings();
+    }
+  }
+
   disconnectBluetooth() {
     this.stations.disconnectBluetooth(this.station);
   }
