@@ -3,7 +3,7 @@
     <button class="popover-button" ion-button (click)="presentPopover($event)">
       <ion-icon name="more"></ion-icon>
     </button>
-    <ion-card-title>{{station.name}}</ion-card-title>
+    <ion-card-title>{{ (station.settings || {}).name || station.name }}</ion-card-title>
   </ion-card-header>
   <ion-card-content>
     <ng-container *ngIf="data">
