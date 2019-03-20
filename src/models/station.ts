@@ -12,4 +12,5 @@ export interface Station {
   address: string;
   bluetoothConnected?: boolean;
   networks?: Array<Network>;
+  settings?: Object;
 }
