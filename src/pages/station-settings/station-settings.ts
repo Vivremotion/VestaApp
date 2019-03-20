@@ -1,6 +1,9 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ViewController } from 'ionic-angular';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {Station} from "../../models/station";
+import {ConnectionsProvider} from "../../providers/connections/connections";
+import {Stations} from "../../providers/stations/stations";
 
 /**
  * Generated class for the StationSettingsPage page.
@@ -15,17 +18,21 @@ import {FormBuilder, FormGroup, Validators} from "@angular/forms";
   templateUrl: 'station-settings.html',
 })
 export class StationSettingsPage {
+  station: Station;
   form: FormGroup;
-  settings = {
+  settings:any = {
     name: ''
   };
 
   constructor(
     public viewController: ViewController,
     public formBuilder: FormBuilder,
-    public navParams: NavParams
+    public navParams: NavParams,
+    public connections: ConnectionsProvider,
+    public stations: Stations
   ) {
-    this.settings.name = this.navParams.get('name');
+    this.station = this.navParams.get('station');
+    this.settings = this.station.settings;
     this._buildForm();
   }
 
@@ -40,16 +47,16 @@ export class StationSettingsPage {
     });
   }
 
-  ionViewDidLoad() {
-    console.log('ionViewDidLoad StationSettingsPage');
-  }
-
-  ionViewWillEnter() {
-  }
-
   save() {
-    // todo: requete pour sauvegarder
-    console.log(this.settings)
+    this.station.name = this.settings.name;
+    this.station.settings = { ...this.settings, ...{ new: false }};
+    this.connections.send({
+      route: 'Settings/set',
+      address: this.station.address,
+      settings: this.station.settings
+    });
+    this.stations.upsert(this.station);
+    this.viewController.dismiss();
   }
 
   cancel() {
