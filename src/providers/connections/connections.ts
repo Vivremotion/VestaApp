@@ -15,15 +15,8 @@ function isJSON(text) {
 export class ConnectionsProvider {
   dataSubject = new BehaviorSubject({});
   data = {};
-  stations = [];
 
-  constructor(public http: HttpClient, public bluetooth: BluetoothSerial, stations: Stations) {
-    stations.watchConnected({
-      next: function (stations) {
-        this.stations = stations;
-      }.bind(this)
-    });
-
+  constructor(public http: HttpClient, public bluetooth: BluetoothSerial) {
     const bus = bluetooth.subscribe('\n');
     bus.subscribe({
       next: function(data) {
@@ -39,11 +32,9 @@ export class ConnectionsProvider {
   async send(anObject) {
     return await Promise.all([
       new Promise((resolve, reject) => {
-        if (this.stations.length) {
-          this.bluetooth.write(JSON.stringify(anObject))
-            .then(resolve)
-            .catch(reject);
-        }
+        this.bluetooth.write(JSON.stringify(anObject))
+          .then(resolve)
+          .catch(reject);
 
         // todo: add http requests
       })
