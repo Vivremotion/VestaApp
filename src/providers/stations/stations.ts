@@ -4,6 +4,7 @@ import { BluetoothSerial } from '@ionic-native/bluetooth-serial/ngx';
 import { BehaviorSubject } from "rxjs";
 
 import { Station } from '../../models/station';
+import {ConnectionsProvider} from "../connections/connections";
 
 @Injectable()
 export class Stations {
@@ -15,7 +16,7 @@ export class Stations {
   availableStationsSubject: BehaviorSubject<Station[]> = new BehaviorSubject([]);
   appState = { isActive: true };
 
-  constructor(public storage: Storage, public bluetooth: BluetoothSerial) {
+  constructor(public storage: Storage, public bluetooth: BluetoothSerial, public connections: ConnectionsProvider) {
     document.addEventListener('pause', () => this.appState.isActive = false);
     document.addEventListener('resume', () => this.appState.isActive = true);
 
@@ -30,6 +31,20 @@ export class Stations {
         }.bind(this)
       });
     }));
+
+    connections.watchForIncomingData({
+      next: (data) => {
+        if (data.route) {
+          if (data.route === 'Settings/get' || data.route === 'Settings/set') {
+            if (data.stationId) {
+              const station = this.stations.find((station) => station.address === data.stationId);
+              station.settings = data.data;
+              this.upsert(station);
+            }
+          }
+        }
+      }
+    });
 
     this.scanBluetooth();
   }
@@ -65,6 +80,10 @@ export class Stations {
       deviceConnection.subscribe({
         next: function() {
           station.bluetoothConnected = true;
+          this.connections.send({
+            route: 'Settings/get',
+            address: station.address
+          });
           this.upsert(station);
           this.setAvailableDevices();
           resolve(true);
