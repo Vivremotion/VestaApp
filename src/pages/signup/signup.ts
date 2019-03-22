@@ -15,17 +15,16 @@ export class SignupPage {
   // The account fields for the login form.
   // If you're using the username field with or without email, make
   // sure to add it to the type
-  account: { name: string, email: string, password: string } = {
-    name: '',
+  account: { email: string, password: string } = {
     email: '',
     password: ''
   };
 
   signupForm = new FormGroup({
-    name: new FormControl(this.account.name, [
+    email: new FormControl(this.account.email, [
       Validators.required
     ]),
-    email: new FormControl(this.account.email, [
+    password: new FormControl(this.account.password, [
       Validators.required
     ])
   });
@@ -37,29 +36,28 @@ export class SignupPage {
     public user: User,
     public toastCtrl: ToastController,
     public translateService: TranslateService,) {
-    
+
     this.translateService.get('SIGNUP_ERROR').subscribe((value) => {
       this.signupErrorString = value;
     })
   }
 
   doSignup() {
-    // Attempt to login in through our User service
-    this.user.signup(this.account).subscribe((resp) => {
-      console.log(this.signupForm.errors)
-      // this.navCtrl.push(MainPage);
-    }, (err) => {
-
-      //this.navCtrl.push(MainPage);
-      console.log(this.signupForm.errors)
-
-      // Unable to sign up
-      let toast = this.toastCtrl.create({
-        message: this.signupErrorString,
-        duration: 3000,
-        position: 'top'
+    this.user.signUpWithEmailAndPassword(this.account)
+      .then((user) => {
+        if (user) {
+          this.navCtrl.push(MainPage);
+        }
+      })
+      .catch((error) => {
+        // Unable to sign up
+        console.log(error);
+        let toast = this.toastCtrl.create({
+          message: this.signupErrorString,
+          duration: 3000,
+          position: 'top'
+        });
+        toast.present();
       });
-      toast.present();
-    });
   }
 }
