@@ -30,6 +30,7 @@
     "@ionic/storage": "2.2.0",
     "@ngx-translate/core": "8.0.0",
     "@ngx-translate/http-loader": "^2.0.0",
+    "angularfire2": "^5.0.0-rc.12-next",
     "cordova-android": "~7.1.4",
     "cordova-plugin-bluetooth-serial": "^0.4.7",
     "cordova-plugin-device": "^2.0.2",

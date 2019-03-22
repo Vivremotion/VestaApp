@@ -8,6 +8,9 @@ import { IonicStorageModule, Storage } from '@ionic/storage';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
+import { AngularFireModule } from 'angularfire2';
+import { AngularFireAuth } from 'angularfire2/auth';
+
 
 import { Settings, User, Api, Stations, StationsDataProvider } from '../providers';
 import { ComponentsModule } from "../components/components.module";
@@ -50,6 +53,14 @@ export function provideSettings(storage: Storage) {
     IonicModule.forRoot(StationsApp),
     IonicStorageModule.forRoot({
       driverOrder: ['localstorage', 'indexeddb', 'sqlite', 'websql']
+    }),
+    AngularFireModule.initializeApp({
+      apiKey: "AIzaSyDvhHCi9-orEQD8qMhHDHr4lPTMVHA00RM",
+      authDomain: "vesta-1.firebaseapp.com",
+      databaseURL: "https://vesta-1.firebaseio.com",
+      projectId: "vesta-1",
+      storageBucket: "vesta-1.appspot.com",
+      messagingSenderId: "459587208824"
     })
   ],
   bootstrap: [IonicApp],
@@ -69,7 +80,8 @@ export function provideSettings(storage: Storage) {
     { provide: Settings, useFactory: provideSettings, deps: [Storage] },
     ConnectionsProvider,
     // Keep this to enable Ionic's runtime error handling during development
-    { provide: ErrorHandler, useClass: IonicErrorHandler }
+    { provide: ErrorHandler, useClass: IonicErrorHandler },
+    AngularFireAuth
   ]
 })
 export class AppModule { }
