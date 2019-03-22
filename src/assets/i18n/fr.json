@@ -46,5 +46,9 @@
 
   "CARDS_TITLE": "Social",
 
-  "SEARCH_TITLE": "Recherche"
+  "SEARCH_TITLE": "Recherche",
+
+  "CONNECT_WIFI_TITLE": "Connecter au wifi",
+  "CONNECTING": "Connecting",
+  "FETCHING_NETWORKS": "Fetching networks"
 }

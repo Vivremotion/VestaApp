@@ -42,6 +42,8 @@
   "CONNECT": "Connect",
 
   "CONNECT_WIFI_TITLE": "Connect to wifi",
+  "CONNECTING": "Connecting",
+  "FETCHING_NETWORKS": "Fetching networks",
 
   "ITEM_NAME_PLACEHOLDER": "Name",
   "ITEM_ABOUT_PLACEHOLDER": "About",
