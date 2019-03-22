@@ -1,6 +1,7 @@
 import 'rxjs/add/operator/toPromise';
 
 import { Injectable } from '@angular/core';
+import { AngularFireAuth } from 'angularfire2/auth';
 
 import { Api } from '../api/api';
 
@@ -27,45 +28,30 @@ import { Api } from '../api/api';
 export class User {
   _user: any;
 
-  constructor(public api: Api) { }
+  constructor(public api: Api, public firebaseAuthentication: AngularFireAuth) { }
 
   /**
-   * Send a POST request to our login endpoint with the data
-   * the user entered on the form.
+   * Login
    */
-  login(accountInfo: any) {
-    let seq = this.api.post('login', accountInfo).share();
-
-    seq.subscribe((res: any) => {
-      // If the API returned a successful response, mark the user as logged in
-      if (res.status == 'success') {
-        this._loggedIn(res);
-      } else {
-      }
-    }, err => {
-      console.error('ERROR', err);
-    });
-
-    return seq;
+  login(account: any) {
+    return this.firebaseAuthentication.auth.signInWithEmailAndPassword(account.email, account.password)
+      .then(() => {
+        this._loggedIn(this.firebaseAuthentication.auth.currentUser);
+        if (!this._user) return Promise.reject('INVALID_CREDENTIALS');
+        return Promise.resolve(this._user);
+      });
   }
 
   /**
-   * Send a POST request to our signup endpoint with the data
-   * the user entered on the form.
+   * Create an account with an email and a password
    */
-  signup(accountInfo: any) {
-    let seq = this.api.post('signup', accountInfo).share();
-
-    seq.subscribe((res: any) => {
-      // If the API returned a successful response, mark the user as logged in
-      if (res.status == 'success') {
-        this._loggedIn(res);
-      }
-    }, err => {
-      console.error('ERROR', err);
-    });
-
-    return seq;
+  signUpWithEmailAndPassword(account: any) {
+    return this.firebaseAuthentication.auth.createUserWithEmailAndPassword(account.email, account.password)
+      .then(() => {
+        this._loggedIn(this.firebaseAuthentication.auth.currentUser);
+        if (!this._user) return Promise.reject('PROBLEM_OCCURED');
+        return Promise.resolve(this._user);
+      });
   }
 
   /**
@@ -78,8 +64,8 @@ export class User {
   /**
    * Process a login/signup response to store user data
    */
-  _loggedIn(resp) {
-    this._user = resp.user;
+  _loggedIn(user) {
+    this._user = user;
   }
 
   /**
