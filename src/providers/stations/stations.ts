@@ -35,10 +35,13 @@ export class Stations {
     connections.watchForIncomingData({
       next: (data) => {
         if (data.route) {
-          if (data.route === 'Settings/get' || data.route === 'Settings/set') {
+          if (data.route === 'Station/get' || data.route === 'Station/set') {
             if (data.stationId) {
-              const station = this.stations.find((station) => station.address === data.stationId);
-              station.settings = data.data;
+              let station = this.stations.find((station) => station.address === data.address);
+              delete data.data.route;
+              delete data.data.address;
+              station = {...station, ...data.data};
+              console.log(station)
               this.upsert(station);
             }
           }
@@ -59,16 +62,15 @@ export class Stations {
   scanBluetooth() {
     this.bluetooth.enable()
       .then(() => {
-        this.bluetooth.discoverUnpaired()
-          .then(devices => {
-            this.availableDevices = devices;
-            console.log(this.stations);
-            this.setAvailableDevices();
-            if (this.appState.isActive) {
-              this.scanBluetooth();
-            }
-          })
-          .catch(error => console.error(error));
+          this.bluetooth.discoverUnpaired()
+            .then(devices => {
+              this.availableDevices = devices;
+              this.setAvailableDevices();
+              if (this.appState.isActive) {
+                this.scanBluetooth();
+              }
+            })
+            .catch(error => console.error(error));
         }
       )
       .catch(error => console.error(error));
@@ -81,7 +83,7 @@ export class Stations {
         next: function() {
           station.bluetoothConnected = true;
           this.connections.send({
-            route: 'Settings/get',
+            route: 'Station/get',
             address: station.address
           });
           this.upsert(station);
@@ -117,7 +119,7 @@ export class Stations {
   }
 
   upsert(station: Station) {
-    let index = this.stations.indexOf(this.find(station.id));
+    let index = this.stations.indexOf(this.find(station.address));
     if (index === -1) {
       this.stations.push(station);
     } else {
@@ -135,8 +137,8 @@ export class Stations {
       });
   }
 
-  find(id: string) {
-    return this.stations.find(station => station.id === id);
+  find(address: string) {
+    return this.stations.find(station => station.address === address);
   }
 
   delete(station: Station) {
