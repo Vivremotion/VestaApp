@@ -51,7 +51,7 @@ export class StationSettingsPage {
     this.station.name = this.settings.name;
     this.station.settings = { ...this.settings, ...{ new: false }};
     this.connections.send({
-      route: 'Settings/set',
+      route: 'Station/set',
       address: this.station.address,
       settings: this.station.settings
     });
