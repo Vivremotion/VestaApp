@@ -10,6 +10,7 @@ import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
 import { AngularFireModule } from 'angularfire2';
 import { AngularFireAuth } from 'angularfire2/auth';
+import { AngularFirestore } from 'angularfire2/firestore';
 
 
 import { Settings, User, Api, Stations, StationsDataProvider } from '../providers';
@@ -81,7 +82,8 @@ export function provideSettings(storage: Storage) {
     ConnectionsProvider,
     // Keep this to enable Ionic's runtime error handling during development
     { provide: ErrorHandler, useClass: IonicErrorHandler },
-    AngularFireAuth
+    AngularFireAuth,
+    AngularFirestore
   ]
 })
 export class AppModule { }
