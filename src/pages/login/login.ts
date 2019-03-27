@@ -34,8 +34,8 @@ export class LoginPage {
 
   doLogin() {
     this.user.login(this.account)
-      .then((user) => {
-        if (user) {
+      .then((loggedIn:any=false) => {
+        if (loggedIn) {
           this.navCtrl.push(MainPage);
         }
       })

@@ -1,9 +1,9 @@
-import 'rxjs/add/operator/toPromise';
-
 import { Injectable } from '@angular/core';
 import { AngularFireAuth } from 'angularfire2/auth';
+import { AngularFirestore } from 'angularfire2/firestore';
 
 import { Api } from '../api/api';
+import { Observable } from 'rxjs-compat';
 
 /**
  * Most apps have the concept of a User. This is a simple provider
@@ -27,8 +27,9 @@ import { Api } from '../api/api';
 @Injectable()
 export class User {
   _user: any;
+  userObserver: Observable<any>;
 
-  constructor(public api: Api, public firebaseAuthentication: AngularFireAuth) { }
+  constructor(public api: Api, public firebaseAuthentication: AngularFireAuth, public db: AngularFirestore) { }
 
   /**
    * Login
@@ -36,9 +37,22 @@ export class User {
   login(account: any) {
     return this.firebaseAuthentication.auth.signInWithEmailAndPassword(account.email, account.password)
       .then(() => {
-        this._loggedIn(this.firebaseAuthentication.auth.currentUser);
-        if (!this._user) return Promise.reject('INVALID_CREDENTIALS');
-        return Promise.resolve(this._user);
+        const user = this.firebaseAuthentication.auth.currentUser;
+        if (!user) return Promise.reject('INVALID_CREDENTIALS');
+        return Promise.resolve(user);
+      })
+      .then((user:any) => {
+        this.userObserver = this.db.collection('users', ref => ref.where('email', '==', user.email))
+          .valueChanges();
+        this.userObserver.subscribe(data => {
+          console.log(data)
+          if (!data.length) {
+            delete account.password;
+            this.db.collection('users').add(account);
+          }
+          this._loggedIn(data[0]);
+        })
+        return Promise.resolve(true);
       });
   }
 
@@ -48,9 +62,13 @@ export class User {
   signUpWithEmailAndPassword(account: any) {
     return this.firebaseAuthentication.auth.createUserWithEmailAndPassword(account.email, account.password)
       .then(() => {
-        this._loggedIn(this.firebaseAuthentication.auth.currentUser);
-        if (!this._user) return Promise.reject('PROBLEM_OCCURED');
-        return Promise.resolve(this._user);
+        const user = this.firebaseAuthentication.auth.currentUser;
+        if (!user) return Promise.reject('PROBLEM_OCCURED');
+        return Promise.resolve(user);
+      })
+      .then(() => {
+        account.password = undefined;
+        this.db.collection('users').add(account);
       });
   }
 

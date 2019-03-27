@@ -44,8 +44,8 @@ export class SignupPage {
 
   doSignup() {
     this.user.signUpWithEmailAndPassword(this.account)
-      .then((user) => {
-        if (user) {
+      .then((created:any=false) => {
+        if (created) {
           this.navCtrl.push(MainPage);
         }
       })
