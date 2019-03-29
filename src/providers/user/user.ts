@@ -3,6 +3,7 @@ import { AngularFireAuth } from 'angularfire2/auth';
 import { AngularFirestore } from 'angularfire2/firestore';
 
 import { Api } from '../api/api';
+import { BehaviorSubject } from 'rxjs';
 import { Observable } from 'rxjs-compat';
 
 /**
@@ -28,6 +29,7 @@ import { Observable } from 'rxjs-compat';
 export class User {
   _user: any;
   userObserver: Observable<any>;
+  userSubject: BehaviorSubject<any> = new BehaviorSubject(null);
 
   constructor(public api: Api, public firebaseAuthentication: AngularFireAuth, public db: AngularFirestore) { }
 
@@ -42,16 +44,16 @@ export class User {
         return Promise.resolve(user);
       })
       .then((user:any) => {
-        this.userObserver = this.db.collection('users', ref => ref.where('email', '==', user.email))
+        this.userObserver = this.db.collection('users').doc(user.uid)
           .valueChanges();
         this.userObserver.subscribe(data => {
-          console.log(data)
-          if (!data.length) {
+          if (!data) {
             delete account.password;
-            this.db.collection('users').add(account);
+            return this.db.collection('users').doc(user.uid).set(account);
           }
-          this._loggedIn(data[0]);
-        })
+          data.id = user.uid;
+          this._loggedIn(data);
+        });
         return Promise.resolve(true);
       });
   }
@@ -66,9 +68,12 @@ export class User {
         if (!user) return Promise.reject('PROBLEM_OCCURED');
         return Promise.resolve(user);
       })
-      .then(() => {
-        account.password = undefined;
-        this.db.collection('users').add(account);
+      .then((user) => {
+        delete account.password;
+        this.db.collection('users').doc(user.uid).set(account);
+        account.id = user.uid;
+        this._loggedIn(account);
+        return Promise.resolve(true);
       });
   }
 
@@ -77,6 +82,7 @@ export class User {
    */
   logout() {
     this._user = null;
+    this.userSubject.next(null);
   }
 
   /**
@@ -84,6 +90,7 @@ export class User {
    */
   _loggedIn(user) {
     this._user = user;
+    this.userSubject.next(this._user);
   }
 
   /**
