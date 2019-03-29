@@ -67,7 +67,7 @@ export class StationsDataProvider {
 
   askDataToAllStations() {
     types.forEach(type => {
-      this.stations.forEach((station) => {
+      this.stations.filter(station => station.bluetoothConnected).forEach((station) => {
         this.askData(station, type);
       })
     })

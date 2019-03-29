@@ -2,13 +2,17 @@ import { Injectable } from '@angular/core';
 import { Storage } from '@ionic/storage';
 import { BluetoothSerial } from '@ionic-native/bluetooth-serial/ngx';
 import { BehaviorSubject } from "rxjs";
+import { AngularFirestore } from 'angularfire2/firestore';
 
 import { Station } from '../../models/station';
 import {ConnectionsProvider} from "../connections/connections";
+import {User} from "../user/user";
+import * as firebase from "firebase";
+import DocumentData = firebase.firestore.DocumentData;
 
 @Injectable()
 export class Stations {
-  stations: Station[];
+  stations = [];
   stationsSubject: BehaviorSubject<Station[]> = new BehaviorSubject([]);
   connectedStations = [];
   connectedStationsSubject: BehaviorSubject<Station[]> = new BehaviorSubject([]);
@@ -16,21 +20,38 @@ export class Stations {
   availableStationsSubject: BehaviorSubject<Station[]> = new BehaviorSubject([]);
   appState = { isActive: true };
 
-  constructor(public storage: Storage, public bluetooth: BluetoothSerial, public connections: ConnectionsProvider) {
+  constructor(public storage: Storage, public bluetooth: BluetoothSerial, public connections: ConnectionsProvider, public user: User, public db: AngularFirestore) {
     document.addEventListener('pause', () => this.appState.isActive = false);
     document.addEventListener('resume', () => this.appState.isActive = true);
 
     this.getStored().then((storedStations => {
       storedStations.forEach((station, index, array) => array[index].bluetoothConnected = false);
+      storedStations.forEach((station, index, array) => array[index].firestoreConnected = false);
       this.stations = storedStations;
       this.stationsSubject.next(storedStations);
       this.stationsSubject.subscribe({
         next: function (stations) {
-          this.connectedStations = stations.filter(station => station.bluetoothConnected);
+          this.connectedStations = stations.filter(station => station.bluetoothConnected || station.firestoreConnected);
+          console.log(this.connectedStations)
           this.connectedStationsSubject.next(this.connectedStations);
         }.bind(this)
       });
     }));
+
+    user.userSubject.subscribe({
+      next: function(userObject) {
+        if (userObject && userObject.id) {
+          db.collection('stations', ref => ref.where('read', 'array-contains', userObject.id)).get().subscribe(snapshot => {
+            snapshot.forEach(documentSnapshot => {
+              const station = documentSnapshot.data();
+              station.firestoreConnected = true;
+              console.log(station);
+              this.upsert(station);
+            })
+          });
+        }
+      }.bind(this)
+    });
 
     connections.watchForIncomingData({
       next: (data) => {
@@ -82,6 +103,20 @@ export class Stations {
       deviceConnection.subscribe({
         next: function() {
           station.bluetoothConnected = true;
+          const user = this.user.get();
+          if (user) {
+            this.connections.send({
+              route: 'Station/addWriter',
+              uid: user.id,
+              address: station.address
+            });
+            this.connections.send({
+              route: 'Station/addReader',
+              uid: user.id,
+              address: station.address
+            });
+          }
+
           this.connections.send({
             route: 'Station/get',
             address: station.address
@@ -118,7 +153,7 @@ export class Stations {
     return { unsubscribe: this.availableStationsSubject.unsubscribe };
   }
 
-  upsert(station: Station) {
+  upsert(station) {
     let index = this.stations.indexOf(this.find(station.address));
     if (index === -1) {
       this.stations.push(station);
