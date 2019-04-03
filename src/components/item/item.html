@@ -1,4 +1,4 @@
-<ion-card *ngIf="station.settings.name">
+<ion-card *ngIf="(station.settings || {}).name || station.name">
   <ion-card-header>
     <button class="popover-button" ion-button (click)="presentPopover($event)">
       <ion-icon name="more"></ion-icon>
@@ -6,8 +6,8 @@
     <ion-card-title>{{ (station.settings || {}).name || station.name }}</ion-card-title>
   </ion-card-header>
   <ion-card-content>
-    <ng-container *ngIf="data">
-      <ion-badge *ngFor="let dataElement of data.data" color="primary">
+    <ng-container *ngIf="lastData && lastData.length">
+      <ion-badge *ngFor="let dataElement of lastData" color="primary">
         {{dataElement.type}}: {{dataElement.value}}
       </ion-badge>
     </ng-container>

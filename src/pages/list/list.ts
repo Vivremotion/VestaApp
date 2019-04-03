@@ -1,4 +1,4 @@
-import { Component, NgZone } from '@angular/core';
+import {Component, Input, NgZone} from '@angular/core';
 import { IonicPage, ModalController, NavController } from 'ionic-angular';
 
 import { Station } from '../../models';
@@ -11,8 +11,8 @@ import { StationsDataProvider } from "../../providers/stations-data/stations-dat
   templateUrl: 'list.html'
 })
 export class ListPage {
+  @Input() readingsData = {};
   currentStations: Station[];
-  stationsData = {};
   watchers = [];
 
   constructor(
@@ -31,9 +31,8 @@ export class ListPage {
     const stationsDataWatcher = stationsData.watch({
       next: function (data) {
         zone.run(() => {
-          if (data.stationId) this.stationsData[data.stationId] = data;
-          console.log('list', this.stationsData)
-        });
+          this.readingsData = JSON.parse(JSON.stringify(data));
+        })
       }.bind(this)
     });
 

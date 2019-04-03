@@ -5,6 +5,8 @@ import { BehaviorSubject } from "rxjs";
 import { Stations } from "../stations/stations";
 import { types } from "../../models/stations-data";
 import {ConnectionsProvider} from "../connections/connections";
+import { AngularFirestore } from 'angularfire2/firestore';
+import {User} from "../user/user";
 
 /*
   Generated class for the StationsDataProvider provider.
@@ -14,11 +16,13 @@ import {ConnectionsProvider} from "../connections/connections";
 */
 @Injectable()
 export class StationsDataProvider {
+  user = {};
   dataSubject = new BehaviorSubject({});
+  firestoreQueries = {};
   data = {};
   stations = [];
 
-  constructor(public bluetooth: BluetoothSerial, public connections: ConnectionsProvider, stations:Stations) {
+  constructor(public bluetooth: BluetoothSerial, public connections: ConnectionsProvider, stations:Stations, public userProvider: User, db: AngularFirestore) {
     const appState = { isActive: true };
     document.addEventListener('pause', () => appState.isActive = false);
     document.addEventListener('resume', () => appState.isActive = true);
@@ -33,6 +37,23 @@ export class StationsDataProvider {
       next: function (stations) {
         this.stations = stations;
         this.askDataToAllStations();
+        if (this.user && this.user.id) {
+          this.stations.forEach(station => {
+            if (!this.firestoreQueries[station.id]) {
+              this.firestoreQueries[station.id] = db.collection('readings',
+                  ref => ref.where('stationId', '==', station.id).orderBy('date', 'desc').limit(2)
+              );
+              this.firestoreQueries[station.id].valueChanges().subscribe(values => {
+                values.forEach((data:any) => {
+                  if (data.stationId) {
+                    this.mergeAndGetChanges(data);
+                    this.dataSubject.next(this.data);
+                  }
+                });
+              });
+            }
+          });
+        }
       }.bind(this)
     });
 
@@ -41,14 +62,28 @@ export class StationsDataProvider {
         if (data.route) {
           const type = data.route.split('/')[0];
           if (data.stationId && types.indexOf(type) !== -1) {
-            const update = this.mergeAndGetChanges(data);
-            this.dataSubject.next(update);
+            data.data.forEach(reading => {
+              const readingObject = {
+                stationId: data.stationId,
+                value: reading.value,
+                date: reading.date,
+                type: reading.type
+              };
+              this.mergeAndGetChanges(readingObject);
+              this.dataSubject.next(this.data);
+            })
           }
         }
       }.bind(this),
       error: function (error) {
         console.error(error);
       }.bind(this)
+    });
+
+    userProvider.userSubject.subscribe({
+      next: user => {
+        this.user = user;
+      }
     });
   }
 
@@ -74,20 +109,10 @@ export class StationsDataProvider {
   }
 
   mergeAndGetChanges(data: StationsData): StationsData {
-    const stationData = this.data[data.stationId];
-
-    if (stationData && stationData.data) {
-      data.data.forEach((dataElement, index) => {
-        for (let i=0; i<stationData.data.length; i++) {
-          if (stationData.data[i].type === dataElement.type) {
-            stationData[i] = dataElement;
-            data.data.splice(1, index);
-          }
-        }
-      });
-      stationData.push(...data.data);
-    } else this.data[data.stationId] = data.data;
-
+    if (!this.data[data.stationId]) {
+      this.data[data.stationId] = [];
+    }
+    this.data[data.stationId].push(data);
     return data;
   }
 }

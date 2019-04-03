@@ -16,11 +16,9 @@ export class PopoverComponent {
 
   constructor(public viewController: ViewController, public navParams: NavParams) {
     this.actions = this.navParams.get('actions');
-    console.log(this.actions)
   }
 
   close(action) {
-    console.log(event)
     this.viewController.dismiss(action);
   }
 }

@@ -16,19 +16,34 @@ import {Stations} from "../../providers";
 export class ItemComponent {
   @Input() station;
   @Input() data;
+  lastData=[]
 
-  popoverActions = [
-    'wifi',
-    'disconnectBluetooth',
-    'settings'
-  ];
+  popoverActions = [];
 
-  constructor(public popoverController: PopoverController, public stations: Stations, public modalController: ModalController) { }
+  constructor(public popoverController: PopoverController, public stations: Stations, public modalController: ModalController) {}
 
   ngOnChanges() {
+    this.popoverActions = [
+      'settings'
+    ];
+
+    if (this.data) {
+      this.lastData = [];
+      for (let i=this.data.length-1; i>=0; i--) {
+        const reading = this.data[i];
+        if (!this.lastData.find((data) => data.type === reading.type)) {
+          this.lastData.push(reading);
+        }
+      }
+    }
+
     if (this.station.settings && this.station.settings.new) {
       this.station.settings.new = false;
       this.settings();
+    }
+
+    if (this.station.bluetoothConnected) {
+      this.popoverActions.push('wifi', 'disconnectBluetooth');
     }
   }
 

@@ -13,7 +13,7 @@
 <ion-content>
   <ion-list>
     <ng-container *ngFor="let station of currentStations">
-      <item [station]="station" [data]="stationsData[station.id]"></item>
+      <item [station]="station" [data]="readingsData[station.id]"></item>
     </ng-container>
   </ion-list>
 </ion-content>
