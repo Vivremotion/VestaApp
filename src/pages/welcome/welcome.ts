@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController } from 'ionic-angular';
+import { User } from '../../providers/user/user'
 
 /**
  * The Welcome Page is a splash page that quickly describes the app,
@@ -13,8 +14,15 @@ import { IonicPage, NavController } from 'ionic-angular';
   templateUrl: 'welcome.html'
 })
 export class WelcomePage {
-
-  constructor(public navCtrl: NavController) {}
+  constructor(public navCtrl: NavController, user: User) {
+    user.userSubject.subscribe({
+      next(user) {
+        if (user) {
+          navCtrl.push('TabsPage');
+        }
+      }
+    })
+  }
 
   login() {
     this.navCtrl.push('LoginPage');
