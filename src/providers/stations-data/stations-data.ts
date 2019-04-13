@@ -22,7 +22,7 @@ export class StationsDataProvider {
   data = {};
   stations = [];
 
-  constructor(public bluetooth: BluetoothSerial, public connections: ConnectionsProvider, stations:Stations, public userProvider: User, db: AngularFirestore) {
+  constructor(public bluetooth: BluetoothSerial, public connections: ConnectionsProvider, stations:Stations, public userProvider: User, public db: AngularFirestore) {
     const appState = { isActive: true };
     document.addEventListener('pause', () => appState.isActive = false);
     document.addEventListener('resume', () => appState.isActive = true);
@@ -98,6 +98,15 @@ export class StationsDataProvider {
       address: station.address
     })
       .catch(error => console.error(error));
+  }
+
+  askDataForDateAndStation(station, start, end) {
+    return this.db.collection('readings',
+      ref => ref.where('stationId', '==', station.id)
+        .where('date', '>=', start.toString())
+        .where('date', '<=', end.toString())
+        .orderBy('date', 'desc')
+    );
   }
 
   askDataToAllStations() {
