@@ -1,5 +1,5 @@
 {
-  "name": "TestSuper",
+  "name": "Vesta",
   "version": "0.0.1",
   "author": "Ionic Framework",
   "homepage": "http://ionicframework.com/",
@@ -10,8 +10,12 @@
     "build": "ionic-app-scripts build",
     "lint": "ionic-app-scripts lint"
   },
+  "config": {
+    "ionic_copy": "./copy.config.js"
+  },
   "dependencies": {
-    "@angular/animations": "7.2.11",
+    "@angular/animations": "^7.2.11",
+    "@angular/cdk": "^6.3.0",
     "@angular/common": "7.2.11",
     "@angular/compiler": "7.2.11",
     "@angular/compiler-cli": "7.2.11",
@@ -40,9 +44,12 @@
     "cordova-plugin-statusbar": "^2.4.2",
     "cordova-plugin-whitelist": "^1.3.3",
     "firebase": "5.9.1",
+    "highcharts": "7.0.3",
+    "highcharts-angular": "^2.4.0",
     "http2": "^3.3.7",
     "ionic-angular": "3.9.2",
     "ionicons": "3.0.0",
+    "ng-pick-datetime": "^7.0.0",
     "rxjs": "6.3.3",
     "rxjs-compat": "6.3.3",
     "rxjs-tslint": "^0.1.7",

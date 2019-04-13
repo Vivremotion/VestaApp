@@ -1,18 +1,35 @@
 <ion-header>
-
   <ion-navbar>
-    <ion-title>{{ item.name }}</ion-title>
+    <ion-title>{{ (station.settings || {}).name || station.name }}</ion-title>
   </ion-navbar>
-
 </ion-header>
 
 
 <ion-content>
-  <div class="item-profile" text-center #profilePic [style.background-image]="'url(' + item.profilePic + ')'">
-  </div>
-
   <div class="item-detail" padding>
-    <h2>{{item.name}}</h2>
-    <p>{{item.about}}</p>
+    <div *ngFor="let reading of lastData">
+      <div>{{ reading.type }}: {{ reading.value }}</div>
+    </div>
+
+    <div>
+      <label for="dt1">{{ 'START_DATE' | translate }}:</label>
+      <!-- Todo: Ne plus utiliser (blur)-->
+      <input id="dt1" [(ngModel)]="start" [owlDateTime]="dt1" [owlDateTimeTrigger]="dt1" (blur)="askDataForDates()">
+      <owl-date-time #dt1 [pickerMode]="'dialog'"></owl-date-time>
+    </div>
+    <div>
+      <label for="dt2">{{ 'END_DATE' | translate }}:</label>
+      <input id="dt2" [(ngModel)]="end" ngModel [owlDateTime]="dt2" [owlDateTimeTrigger]="dt2" (blur)="askDataForDates()">
+      <owl-date-time #dt2></owl-date-time>
+    </div>
+
+    <ng-container *ngFor="let type of objectKeys(charts)">
+      <highcharts-chart
+        [Highcharts]="Highcharts"
+        [options]="charts[type]"
+        style="width: 90%; height: 40%; display: block;"
+      >
+      </highcharts-chart>
+    </ng-container>
   </div>
 </ion-content>

@@ -1,6 +1,6 @@
 import {Component, Input} from '@angular/core';
 import {PopoverComponent} from "../popover/popover";
-import {ModalController, PopoverController} from "ionic-angular";
+import {ModalController, NavController, PopoverController} from "ionic-angular";
 import {Stations} from "../../providers";
 
 /**
@@ -20,7 +20,7 @@ export class ItemComponent {
 
   popoverActions = [];
 
-  constructor(public popoverController: PopoverController, public stations: Stations, public modalController: ModalController) {}
+  constructor(public popoverController: PopoverController, public stations: Stations, public modalController: ModalController, public navCtrl: NavController) {}
 
   ngOnChanges() {
     this.popoverActions = [
@@ -45,6 +45,13 @@ export class ItemComponent {
     if (this.station.bluetoothConnected) {
       this.popoverActions.push('wifi', 'disconnectBluetooth');
     }
+  }
+
+  showDetails() {
+    this.navCtrl.push('ItemDetailPage', {
+      station: this.station,
+      lastData: this.lastData
+    })
   }
 
   disconnectBluetooth() {

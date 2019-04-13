@@ -54,13 +54,4 @@ export class ListPage {
   deleteItem(item) {
     this.stations.delete(item);
   }
-
-  /**
-   * Navigate to the detail page for this item.
-   */
-  openItem(station: Station) {
-    this.navCtrl.push('ItemDetailPage', {
-      item: station
-    });
-  }
 }

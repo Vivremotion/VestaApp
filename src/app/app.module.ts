@@ -1,5 +1,6 @@
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { ErrorHandler, NgModule } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { BluetoothSerial } from '@ionic-native/bluetooth-serial/ngx';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
@@ -11,7 +12,7 @@ import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
 import { AngularFireModule } from 'angularfire2';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { AngularFirestore } from 'angularfire2/firestore';
-
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { Settings, User, Api, Stations, StationsDataProvider } from '../providers';
 import { ComponentsModule } from "../components/components.module";
@@ -42,6 +43,8 @@ export function provideSettings(storage: Storage) {
   ],
   imports: [
     BrowserModule,
+    FormsModule,
+    BrowserAnimationsModule,
     HttpClientModule,
     ComponentsModule,
     TranslateModule.forRoot({
