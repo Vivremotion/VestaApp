@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { AngularFirestore } from 'angularfire2/firestore';
+import { Observable } from 'rxjs-compat';
+import { BehaviorSubject } from 'rxjs';
+import { Storage } from '@ionic/storage';
 
 import { Api } from '../api/api';
-import { BehaviorSubject } from 'rxjs';
-import { Observable } from 'rxjs-compat';
 
 /**
  * Most apps have the concept of a User. This is a simple provider
@@ -31,7 +32,13 @@ export class User {
   userObserver: Observable<any>;
   userSubject: BehaviorSubject<any> = new BehaviorSubject(null);
 
-  constructor(public api: Api, public firebaseAuthentication: AngularFireAuth, public db: AngularFirestore) { }
+  constructor(public api: Api, public firebaseAuthentication: AngularFireAuth, public db: AngularFirestore, public storage: Storage) {
+    storage.get('user')
+      .then(user =>  {
+        this._user = user;
+        this.userSubject.next(user);
+      });
+  }
 
   /**
    * Login
@@ -82,6 +89,7 @@ export class User {
    */
   logout() {
     this._user = null;
+    this.storage.set('user', null);
     this.userSubject.next(null);
   }
 
@@ -91,6 +99,7 @@ export class User {
   _loggedIn(user) {
     this._user = user;
     this.userSubject.next(this._user);
+    this.storage.set('user', user);
   }
 
   /**
