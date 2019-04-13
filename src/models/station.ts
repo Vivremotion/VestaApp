@@ -11,6 +11,7 @@ export interface Station {
   class: number;
   address: string;
   bluetoothConnected?: boolean;
+  firestoreConnected?: boolean;
   networks?: Array<Network>;
   settings?: Object;
 }
