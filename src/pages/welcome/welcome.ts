@@ -2,6 +2,9 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController } from 'ionic-angular';
 import { User } from '../../providers/user/user'
 
+import { MainPage } from '../';
+import {UserPage} from "../user/user";
+
 /**
  * The Welcome Page is a splash page that quickly describes the app,
  * and then directs the user to create an account or log in.
@@ -33,6 +36,11 @@ export class WelcomePage {
   }
 
   later() {
-    this.navCtrl.push('TabsPage');
+    if (this.navCtrl.parent && this.navCtrl.parent.select) {
+      this.navCtrl.push(UserPage);
+      this.navCtrl.parent.select(0);
+    } else {
+      this.navCtrl.push(MainPage);
+    }
   }
 }

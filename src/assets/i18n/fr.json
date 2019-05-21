@@ -5,9 +5,8 @@
   "LOGIN": "Connexion",
   "SIGNUP": "Inscription",
 
-  "TAB1_TITLE": "Stations",
-  "TAB2_TITLE": "Recherche",
-  "TAB3_TITLE": "Paramètres",
+  "LIST_TITLE": "Stations",
+  "USER_TITLE": "Compte",
 
   "MAP_TITLE": "Carte",
 
