@@ -20,6 +20,7 @@ import { StationsApp } from './app.component';
 import { PopoverComponent } from "../components/popover/popover";
 import { ConnectWifiComponent } from "../components/connect-wifi/connect-wifi";
 import { ConnectionsProvider } from '../providers/connections/connections';
+import {UnitPipeModule} from "../pipes/unit/unit.module";
 
 // The translate loader needs to know where to load i18n files
 // in Ionic's static asset pipeline.
@@ -65,7 +66,8 @@ export function provideSettings(storage: Storage) {
       projectId: "vesta-1",
       storageBucket: "vesta-1.appspot.com",
       messagingSenderId: "459587208824"
-    })
+    }),
+    UnitPipeModule
   ],
   bootstrap: [IonicApp],
   entryComponents: [
@@ -81,10 +83,10 @@ export function provideSettings(storage: Storage) {
     StatusBar,
     Stations,
     StationsDataProvider,
-    { provide: Settings, useFactory: provideSettings, deps: [Storage] },
+    {provide: Settings, useFactory: provideSettings, deps: [Storage]},
     ConnectionsProvider,
     // Keep this to enable Ionic's runtime error handling during development
-    { provide: ErrorHandler, useClass: IonicErrorHandler },
+    {provide: ErrorHandler, useClass: IonicErrorHandler},
     AngularFireAuth,
     AngularFirestore
   ]

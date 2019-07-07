@@ -44,17 +44,6 @@
   "CONNECTING": "Connecting",
   "FETCHING_NETWORKS": "Fetching networks",
 
-  "ITEM_NAME_PLACEHOLDER": "Name",
-  "ITEM_ABOUT_PLACEHOLDER": "About",
-
-  "DONE_BUTTON": "Done",
-  "CANCEL_BUTTON": "Cancel",
-  "DELETE_BUTTON": "Delete",
-
-  "CARDS_TITLE": "Social",
-
-  "WRONG_PASSWORD": "Wrong password",
-
-  "SEARCH_TITLE": "Search",
-  "SEARCH_PLACEHOLDER": "Search the items list, e.g. \"Donald Duck\""
+  "temperature": "Temperature",
+  "humidity": "Humidity"
 }
