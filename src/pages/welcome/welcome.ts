@@ -17,14 +17,23 @@ import {UserPage} from "../user/user";
   templateUrl: 'welcome.html'
 })
 export class WelcomePage {
-  constructor(public navCtrl: NavController, user: User) {
-    user.userSubject.subscribe({
+  user;
+
+  constructor(public navCtrl: NavController, public userProvider: User) {
+    userProvider.userSubject.subscribe({
       next(user) {
+        this.user = user;
         if (user) {
           navCtrl.push('TabsPage');
         }
       }
     })
+  }
+
+  ionViewWillEnter(){
+    if (this.user) {
+      this.navCtrl.push('TabsPage');
+    }
   }
 
   login() {
