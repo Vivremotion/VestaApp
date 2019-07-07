@@ -1,6 +1,7 @@
 import {Component, Input} from '@angular/core';
-import {PopoverComponent} from "../popover/popover";
 import {ModalController, NavController, PopoverController} from "ionic-angular";
+
+import {PopoverComponent} from "../popover/popover";
 import {Stations} from "../../providers";
 
 /**
@@ -73,6 +74,8 @@ export class ItemComponent {
   }
 
   presentPopover(event: any) {
+    event.stopPropagation();
+
     const popover = this.popoverController.create(PopoverComponent, {
       actions: this.popoverActions,
       station: this.station

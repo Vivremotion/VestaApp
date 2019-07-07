@@ -1,14 +1,14 @@
 <ion-card *ngIf="(station.settings || {}).name || station.name" (click)="showDetails()">
   <ion-card-header>
-    <button class="popover-button" ion-button (click)="presentPopover($event)">
-      <ion-icon name="more"></ion-icon>
-    </button>
     <ion-card-title>{{ (station.settings || {}).name || station.name }}</ion-card-title>
+    <button clear (click)="presentPopover($event)">
+      <ion-icon class="item-more-icon" name="more"></ion-icon>
+    </button>
   </ion-card-header>
   <ion-card-content>
     <ng-container *ngIf="lastData && lastData.length">
       <ion-badge *ngFor="let dataElement of lastData" color="primary">
-        {{dataElement.type}}: {{dataElement.value}}
+        {{dataElement.type | translate}}: {{dataElement.value | number:'1.0-1'}}{{dataElement.type | unit}}
       </ion-badge>
     </ng-container>
   </ion-card-content>
