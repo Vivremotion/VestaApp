@@ -103,8 +103,8 @@ export class StationsDataProvider {
   askDataForDateAndStation(station, start, end) {
     return this.db.collection('readings',
       ref => ref.where('stationId', '==', station.id)
-        .where('date', '>=', start.toString())
-        .where('date', '<=', end.toString())
+        .where('date', '>=', start)
+        .where('date', '<=', end)
         .orderBy('date', 'desc')
     );
   }
